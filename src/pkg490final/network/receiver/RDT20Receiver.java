@@ -127,13 +127,9 @@ public class RDT20Receiver extends Thread {
 
         //sends ACK back to ip and port specified in request line.
         DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), reqLine.getIp(), reqLine.getSourcePort());
-<<<<<<< Updated upstream
 
         //if you need loopback because port forwarding doesn't work:
 //        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), Inet4Address.getByName("127.0.0.1"), reqLine.getSourcePort());
-=======
-        //DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), Inet4Address.getByName("127.0.0.1"), reqLine.getSourcePort());
->>>>>>> Stashed changes
         sendingSocket.send(ackPacket);
     }
 
