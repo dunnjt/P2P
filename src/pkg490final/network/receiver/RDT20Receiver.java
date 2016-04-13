@@ -76,7 +76,11 @@ public class RDT20Receiver extends Thread {
 
         packets.add(packet);
         if (packet.isLastPacket()) {
+            
+            //if you dont want the server to stop listening after it receives the last packet in a packet set then delete the next line:
             stopListening();
+            
+            
             System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
             PacketSet allPackets = new PacketSet(packets);
             System.out.println(allPackets.data);
@@ -128,8 +132,6 @@ public class RDT20Receiver extends Thread {
         //sends ACK back to ip and port specified in request line.
         DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), reqLine.getIp(), reqLine.getSourcePort());
 
-        //if you need loopback because port forwarding doesn't work:
-//        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), Inet4Address.getByName("127.0.0.1"), reqLine.getSourcePort());
         sendingSocket.send(ackPacket);
     }
 
