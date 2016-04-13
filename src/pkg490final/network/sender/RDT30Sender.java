@@ -36,8 +36,8 @@ public class RDT30Sender {
     private ArrayList<Packet> currentPackets; //current list of packets to be sent to server.
     private Timer timeOutTimer; //timer to handle timeouts when an ACK isn't received.
     private long startTime; // time when packet is initially sent, used to calculate sample RTT.
-    private long sampleRTT = -1; // time it takes to send a packet and receive ACK.
-    private long estimatedRTT = 2000; //estimated time to receive ACK after sending packet. 2000 ms initial value according to rfc1122
+    private long sampleRTT = 1500; // time it takes to send a packet and receive ACK.
+    private long estimatedRTT = 1500; //estimated time to receive ACK after sending packet. 3000 ms initial value according to rfc1122
     private double devRTT = 0; //deviation of RTT. start at 50 for buffer to give a little extra time to receive packet.
 
     public RDT30Sender() {
@@ -108,8 +108,6 @@ public class RDT30Sender {
      */
     public void rdtSend() throws SocketException, IOException, InterruptedException {
 
-        timeOutTimer = new Timer();
-
         byte[] packetData = getCurrentPacket().toBytes();
 
         senderPrint("Sender sending packet(" + (packetsSent + 1) + "): '\n" + getCurrentPacket().toString() + "\n'");
@@ -122,7 +120,7 @@ public class RDT30Sender {
         setTimer();
 
 //         Minor pause for easier visualization only
-        Thread.sleep(1200);
+//        Thread.sleep(1200);
     }
 
     /**
@@ -141,7 +139,8 @@ public class RDT30Sender {
         receivingSocket.receive(packet);
 
         //records sample RTT when ACK is received.
-        sampleRTT = System.currentTimeMillis() - startTime;
+        //I needed to add this 50 ms because i was getting a timer already cancelled error if i didn't...will investigate why in the future.
+        sampleRTT = System.currentTimeMillis() - startTime + 50;
 
         byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
         //reconstructs packet from DatagramPacket received.
@@ -161,13 +160,11 @@ public class RDT30Sender {
      *
      */
     public void setTimer() {
-        if(sampleRTT == -1){
-            sampleRTT = estimatedRTT;
-        }
+
+        timeOutTimer = new Timer();
 
         System.out.println("Sample RTT: " + sampleRTT + "\nEstimated RTT: " + estimatedRTT);
 
-        
         estimatedRTT = (long) (.875 * estimatedRTT + .125 * sampleRTT);
 
         devRTT = .75 * devRTT + .25 * Math.abs(sampleRTT - estimatedRTT);
@@ -202,6 +199,7 @@ public class RDT30Sender {
 
     public void cancelTimer() {
         timeOutTimer.cancel();
+        timeOutTimer.purge();
     }
 
     /**

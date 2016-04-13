@@ -12,8 +12,7 @@ public class Main {
  Server class directly.
      */
     public static void main(String[] args) {
-
-
+        
         //port forward 49000 & 33000
         String publicIPadddress = pkg490final.PacketUtilities.getPublicIP();
 
