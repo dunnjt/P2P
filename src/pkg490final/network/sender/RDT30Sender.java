@@ -120,7 +120,7 @@ public class RDT30Sender {
         setTimer();
 
 //         Minor pause for easier visualization only
-//        Thread.sleep(1200);
+        Thread.sleep(1200);
     }
 
     /**

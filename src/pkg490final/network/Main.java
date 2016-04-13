@@ -9,11 +9,15 @@ public class Main {
 
     /**
      * if only running server or client then comment one out or run Client or
- Server class directly.
+     * Server class directly.
      */
     public static void main(String[] args) {
+
+        //port forward:
+        //49000 receiver(server)
+        //33000 sender(client)
         
-        //port forward 49000 & 33000
+        //can change this variable to string of public IP of pc running server.
         String publicIPadddress = pkg490final.PacketUtilities.getPublicIP();
 
         pkg490final.network.Server.main(args);
