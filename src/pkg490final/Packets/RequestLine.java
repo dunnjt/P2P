@@ -6,9 +6,8 @@ package pkg490final.Packets;
  * @author john
  */
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import pkg490final.PacketUtilities;
+import pkg490final.IOFunctions;
 import pkg490final.Packets.Request.RequestMethod;
 
 public class RequestLine extends Line {
@@ -26,16 +25,10 @@ public class RequestLine extends Line {
      * @param sourcePort: port to contact client back on
      */
     public RequestLine(RequestMethod method, int sourcePort, String ip) {
-        try {
-            InetAddress localIP = InetAddress.getLocalHost();
             this.sourcePort = sourcePort;
             this.method = method;
-            hostName = localIP.getHostName();
+            hostName = IOFunctions.getLocalHostName();
             this.ip = ip;
-
-        } catch (UnknownHostException e) {
-            System.out.println("local host error");
-        }
 
     }
 
