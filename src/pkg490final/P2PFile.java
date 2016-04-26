@@ -11,18 +11,14 @@ public class P2PFile {
 
     private String name;
     private long size;
-    private String ip;
-    private String hostName;
 
     public P2PFile() {
 
     }
 
-    public P2PFile(String name, long size, String ip, String hostName) {
+    public P2PFile(String name, long size) {
         this.name = name;
         this.size = size;
-        this.ip = ip;
-        this.hostName = hostName;
     }
 
     public String getName() {
@@ -32,24 +28,6 @@ public class P2PFile {
     public long getSize() {
         return size;
     }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-    
-    
 
     public void setName(String name) {
         this.name = name;
