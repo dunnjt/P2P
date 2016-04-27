@@ -23,6 +23,7 @@ public class Client {
     public static void start(String target) {
         try {
 
+            target = "127.0.0.1";
             //if using public address, must forward port 33000 to local ip on your router to receive acks from server.
             RDT30Sender sender = new RDT30Sender();
             sender.startSender(target, 49000, 33000);

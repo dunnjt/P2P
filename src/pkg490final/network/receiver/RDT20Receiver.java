@@ -62,30 +62,25 @@ public class RDT20Receiver extends Thread {
         }
     }
 
-    /**
-     * Once an in order packet is received, it is added to the master list of
-     * packets for later extraction. if its the last packet, the receiver stops
-     * listening and makes a packetSet from the list to extract the data.
-     *
-     * @param packet: in order packet received.
-     */
-    public void deliverData(Packet packet) {
-        packetsReceived++;
-
-        receiverPrint("\n@@@ Receiver delivered packet #(" + packetsReceived + ") with: \n'" + packet + "'");
-
-        packets.add(packet);
-        if (packet.isLastPacket()) {
-            
-            //if you dont want the server to stop listening after it receives the last packet in a packet set then delete the next line:
-            stopListening();
-            
-            
-            System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
-            PacketSet allPackets = new PacketSet(packets);
-            System.out.println(allPackets.data);
-        }
-    }
+//    /**
+//     * Once an in order packet is received, it is added to the master list of
+//     * packets for later extraction. if its the last packet, the receiver stops
+//     * listening and makes a packetSet from the list to extract the data.
+//     *
+//     * @param packet: in order packet received.
+//     */
+//    public void deliverData(Packet packet) {
+//        packetsReceived++;
+//
+//        receiverPrint("\n@@@ Receiver delivered packet #(" + packetsReceived + ") with: \n'" + packet + "'");
+//
+//        packets.add(packet);
+//        if (packet.isLastPacket()) {
+//            System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
+//            PacketSet allPackets = new PacketSet(packets);
+//            System.out.println(allPackets.data);
+//        }
+//    }
 
     /**
      * starts the thread to begin listening for packets. Once a packet is
@@ -93,26 +88,53 @@ public class RDT20Receiver extends Thread {
      * state to see if it was the correct packet.
      *
      */
-    @Override
+//    @Override
+//    public void run() {
+//        try {
+//            receivingSocket = new DatagramSocket(receivingPort);
+//            while (true) {
+//                receiverPrint("Receiver waiting for packet");
+//                byte[] buf = new byte[128];
+//                // receive request
+//                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+//                receivingSocket.receive(packet);
+//                byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
+//                String temp = new String(packetData);
+//                Packet reconstructedPacket = new Packet(temp);
+//                reqLine = (RequestLine) reconstructedPacket.getLine();
+//                currentPacket = reconstructedPacket;
+//
+//                state.action(this);
+//            }
+//        } catch (Exception e) {
+//            stopListening();
+//        }
+//    }
+    
     public void run() {
-        try {
-            receivingSocket = new DatagramSocket(receivingPort);
-            while (true) {
-                receiverPrint("Receiver waiting for packet");
-                byte[] buf = new byte[128];
-                // receive request
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                receivingSocket.receive(packet);
-                byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
-                String temp = new String(packetData);
-                Packet reconstructedPacket = new Packet(temp);
-                reqLine = (RequestLine) reconstructedPacket.getLine();
-                currentPacket = reconstructedPacket;
+        System.out.println("Receiver " + this.getName() + " waiting for packet");
+    }
+    
+    public void incoming(Packet packetData) throws Exception{
+        reqLine = (RequestLine) packetData.getLine();
+        currentPacket = packetData;
+        state.action(this);    
+    }
+    
+    public void deliverData(Packet packet) {
+        packetsReceived++;
 
-                state.action(this);
-            }
-        } catch (Exception e) {
-            stopListening();
+        //receiverPrint("\n@@@ Receiver delivered packet #(" + packetsReceived + ") with: \n'" + packet.getPacketBody() + "'");
+
+        packets.add(packet);
+        if (packet.isLastPacket()) {
+            
+            //if you dont want the server to stop listening after it receives the last packet in a packet set then delete the next line:  
+            System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
+            PacketSet allPackets = new PacketSet(packets);
+            System.out.println(allPackets.data);
+            //DirectoryServer.updateP2PList(allf, MIN_PRIORITY);
+            DirectoryServer.killThread(this.getName());
         }
     }
 
