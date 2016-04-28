@@ -70,7 +70,7 @@ public class P2PFile {
     
     @Override
     public String toString() {
-        return "P2PFile{" + "name=" + name + ", size=" + size + "}\n";
+        return name + " " + size + " " + ip + " " + hostName + "\n";
     }
 
 }

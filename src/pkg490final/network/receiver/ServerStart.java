@@ -14,6 +14,8 @@ import java.util.Calendar;
  */
 public class ServerStart {
     
+    private static Runnable server;
+    
     public static void main(String[] args) {
 
         Calendar now = Calendar.getInstance();
@@ -21,7 +23,6 @@ public class ServerStart {
         System.out.println("Directory Server Started @: " + formatter.format(now.getTime()));
 
         DirectoryServer server = DirectoryServer.getInstance();
-        server.incomingTraffic();
-    }
-    
+        server.run();
+    }   
 }
