@@ -11,16 +11,31 @@ public class P2PFile {
 
     private String name;
     private long size;
+    private String ip;
+    private String hostName;
 
     public P2PFile() {
 
     }
 
-    public P2PFile(String name, long size) {
+    public P2PFile(String name, long size, String ip, String hostName) {
         this.name = name;
         this.size = size;
+        this.ip = ip;
+        this.hostName = hostName;
     }
 
+
+
+    public void convertSpaces() { // space is replace by "|" char
+        name = name.replace(" ", "|");
+    }
+
+    public void convertBack() { // "|" char is replace by space
+        name = name.replace("|", " ");
+
+    }
+    
     public String getName() {
         return name;
     }
@@ -37,15 +52,22 @@ public class P2PFile {
         this.size = size;
     }
 
-    public void convertSpaces() { // space is replace by "|" char
-        name = name.replace(" ", "|");
+    public String getIp() {
+        return ip;
     }
 
-    public void convertBack() { // "|" char is replace by space
-        name = name.replace("|", " ");
-
+    public String getHostName() {
+        return hostName;
     }
 
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+    
     @Override
     public String toString() {
         return "P2PFile{" + "name=" + name + ", size=" + size + "}\n";

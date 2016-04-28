@@ -25,7 +25,7 @@ public class PacketUtilities {
     public static String p2pFilesToString(ArrayList<P2PFile> localFiles) {
         String packetBody = "";
         for (P2PFile localFile : localFiles) { // put all headerLines into one large packetBody string
-            packetBody += localFile.getName() + " " + localFile.getSize() + "\r\n";
+            packetBody += localFile.getName() + " " + localFile.getSize() + " " + localFile.getIp() + " " + localFile.getHostName() + "\r\n";
         }
         return packetBody;
     }
