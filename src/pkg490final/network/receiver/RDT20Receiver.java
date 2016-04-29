@@ -27,14 +27,14 @@ import pkg490final.Packets.Response.ResponseMethod;
  */
 public class RDT20Receiver extends Thread {
 
-    private int receivingPort; // port used to receive packets from the client on.
-    private DatagramSocket receivingSocket = null; //socket used to receive packets from client on.
-    private ArrayList<Packet> packets = new ArrayList(); //list of packets received in correct order.
-    private ReceiverState state; //state that receiver is currently in (waiting for packet 1 or 0)
-    private DatagramSocket sendingSocket = null; //socket to send ACKs to client through.
-    private Packet currentPacket; //last packet received.
-    private int packetsReceived; //number of packets received.
-    private RequestLine reqLine; //request line of last packet received to extract IP and port from.
+    protected int receivingPort; // port used to receive packets from the client on.
+    protected DatagramSocket receivingSocket = null; //socket used to receive packets from client on.
+    protected ArrayList<Packet> packets = new ArrayList(); //list of packets received in correct order.
+    protected ReceiverState state; //state that receiver is currently in (waiting for packet 1 or 0)
+    protected DatagramSocket sendingSocket = null; //socket to send ACKs to client through.
+    protected Packet currentPacket; //last packet received.
+    protected int packetsReceived; //number of packets received.
+    protected RequestLine reqLine; //request line of last packet received to extract IP and port from.
 
     /**
      * constructor for Receiver to initialize receiving Port and thread name.
@@ -127,7 +127,7 @@ public class RDT20Receiver extends Thread {
         packets.add(packet);
         if (packet.isLastPacket()) {
             //System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
-            PacketSet allPackets = new PacketSet(packets);
+            PacketSet allPackets = PacketSet.createPacketSet(packets);
             
             DirectoryServer server = DirectoryServer.getInstance();
 
