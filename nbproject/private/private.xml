@@ -3,13 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/DirectoryServer.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/RDT20Receiver.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/ReceiverState0.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/ReceiverState.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/Receiver.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/ReceiverState1.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/sender/ClientReceiver.java</file>
+            <file>file:/Users/johndunn/Documents/CS490/P2P/src/pkg490final/TCP/P2PClient.java</file>
+            <file>file:/Users/johndunn/Documents/CS490/P2P/src/pkg490final/TCP/P2PHost.java</file>
+            <file>file:/Users/johndunn/Documents/CS490/P2P/src/pkg490final/TCP/Main.java</file>
+            <file>file:/Users/johndunn/Documents/CS490/P2P/src/pkg490final/network/receiver/DirectoryServer.java</file>
         </group>
     </open-files>
 </project-private>

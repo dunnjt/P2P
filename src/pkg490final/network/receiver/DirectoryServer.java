@@ -42,6 +42,7 @@ public class DirectoryServer{
     private DirectoryServer(int port) {
         try 
         { 
+            System.out.println("ON PORT: " + port);
             serverSocket = new DatagramSocket(port);
             masterSongList = new ArrayList<>();
             threads = new HashMap<>();
@@ -60,7 +61,7 @@ public class DirectoryServer{
      */
     public static DirectoryServer getInstance() {
         if(instance == null) {
-            instance = new DirectoryServer(49000);
+            instance = new DirectoryServer(2014);
         }
         return instance;
     }
