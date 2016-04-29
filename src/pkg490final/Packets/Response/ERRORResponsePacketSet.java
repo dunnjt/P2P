@@ -15,4 +15,7 @@ public class ERRORResponsePacketSet extends ResponsePacketSet {
         super(new ResponseLine(ResponseMethod.LIST), "");
     }
 
+    public ERRORResponsePacketSet() {
+
+    }
 }

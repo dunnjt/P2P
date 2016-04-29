@@ -48,4 +48,9 @@ public class ResponseLine extends Line {
         return method.name() + " " + method.statusCode();
     }
 
+    @Override
+    public boolean isRequest() {
+        return false;
+    }
+
 }

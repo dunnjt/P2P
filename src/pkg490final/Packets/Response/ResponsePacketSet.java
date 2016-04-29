@@ -18,4 +18,7 @@ public class ResponsePacketSet extends PacketSet {
     public ResponsePacketSet(Line line, String data) {
         super(line, data);
     }
+    public ResponsePacketSet(){
+        
+    }
 }

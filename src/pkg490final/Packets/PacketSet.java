@@ -14,10 +14,10 @@ import pkg490final.P2PFile;
  *
  * @author john
  */
-public class PacketSet {
+public abstract class PacketSet {
 
     private Line line;
-    private String data ="";
+    private String data = "";
     private ArrayList<Packet> packets;
 
     /**
@@ -30,7 +30,10 @@ public class PacketSet {
         this.line = line;
         this.data = data;
         createPackets();
-
+    }
+    
+    public PacketSet(){
+        
     }
 
     /**
@@ -38,13 +41,18 @@ public class PacketSet {
      *
      * @param packets received
      */
-    public PacketSet(ArrayList<Packet> packets) {
+    private PacketSet(ArrayList<Packet> packets) {
         line = packets.get(0).getLine();
         this.packets = packets;
         for (Packet packet : packets) {
             data += packet.getPacketBody();
         }
     }
+
+    public static PacketSet createPacketSet(ArrayList<Packet> packets){
+        return PacketSetFactory.createPacketSet(packets);
+    }
+
 
     /**
      * creates all the 128 byte packets from the data and request/response lines
@@ -74,7 +82,7 @@ public class PacketSet {
     public String getPacketBody() {
         return data;
     }
-    
+
     public String getData() {
         return data;
     }
@@ -90,17 +98,17 @@ public class PacketSet {
     public Line getLine() {
         return line;
     }
-    
+
     public ArrayList<P2PFile> convertToP2PFiles() {
         ArrayList<P2PFile> list = new ArrayList<>();
         String convert = data.replaceAll("[\n]", " ");
         String[] listString = convert.split(" ");
-        for (int i = 0; i < listString.length-3; i=i+4) {
-            list.add(new P2PFile(listString[i], Long.parseLong(listString[i+1].trim()), listString[i+2], listString[i+3]));         
+        for (int i = 0; i < listString.length - 3; i = i + 4) {
+            list.add(new P2PFile(listString[i], Long.parseLong(listString[i + 1].trim()), listString[i + 2], listString[i + 3]));
         }
         return list;
     }
-    
+
     //for testing purposes
     @Override
     public String toString() {

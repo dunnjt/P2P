@@ -13,6 +13,7 @@ package pkg490final.Packets;
 public abstract class Line {
 
     abstract public int size();
+    abstract public boolean isRequest();
 
 
 

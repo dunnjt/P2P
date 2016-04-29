@@ -4,22 +4,19 @@ package pkg490final;
 import pkg490final.Packets.Response.ResponseLine;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.URL;
 import pkg490final.Packets.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import pkg490final.Packets.Line;
-import pkg490final.Packets.PacketSet;
-import pkg490final.Packets.Request.RequestMethod;
 
 public class PacketUtilities {
-    
+
     /**
      * concatenates P2PFile file name with file size
-     * @param localFiles ArrayList of P2PFile, P2PFile consists of name and size of song file.
+     *
+     * @param localFiles ArrayList of P2PFile, P2PFile consists of name and size
+     * of song file.
      * @return a String of file name and size
      */
     public static String p2pFilesToString(ArrayList<P2PFile> localFiles) {
@@ -29,11 +26,20 @@ public class PacketUtilities {
         }
         return packetBody;
     }
-    
+
+    static public boolean isRequestLine(String line) {
+        boolean isRequest = false;
+        String a[] = line.split(" ");
+        if (a.length == 5) {
+            isRequest = true;
+        }
+        return isRequest;
+    }
+
     /**
-     * 
+     *
      * @param line
-     * @return 
+     * @return
      */
     static public Line returnLine(String line) {
         String a[] = line.split(" ");
@@ -44,7 +50,9 @@ public class PacketUtilities {
     }
 
     /**
-     * Extracts P2P file names from packets. Strips header information from body of the message. Body of message is added to String Array
+     * Extracts P2P file names from packets. Strips header information from body
+     * of the message. Body of message is added to String Array
+     *
      * @param packets
      * @return ArrayList of songs
      */
@@ -67,6 +75,7 @@ public class PacketUtilities {
 //    }
     /**
      * Reads IP from amazonaws
+     *
      * @return IP address
      */
     public static String getPublicIP() {
@@ -81,7 +90,8 @@ public class PacketUtilities {
     }
 
     /**
-     * Accepts parameter of headerLines and creates ArrayList of P2PFiles. 
+     * Accepts parameter of headerLines and creates ArrayList of P2PFiles.
+     *
      * @param headerLines
      * @return ArrayList of P2PFile
      */

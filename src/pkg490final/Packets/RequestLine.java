@@ -73,9 +73,20 @@ public class RequestLine extends Line {
         this.sourcePort = sourcePort;
     }
 
+    public RequestMethod getMethod() {
+        return method;
+    }
+    
+    
+
     @Override
     public String toString() {
 
         return method.name() + " " + hostName + " " + ip + " " + sourcePort;
+    }
+
+    @Override
+    public boolean isRequest() {
+        return true;
     }
 }

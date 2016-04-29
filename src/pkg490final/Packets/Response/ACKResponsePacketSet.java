@@ -8,7 +8,5 @@ public class ACKResponsePacketSet extends ResponsePacketSet {
     public ACKResponsePacketSet() {
         super(new ResponseLine(ResponseMethod.ACK), "This Is an Ack packet");
     }
-    
-    
-    
+
 }

@@ -17,6 +17,7 @@ import pkg490final.Packets.Request.DOWNRequestPacketSet;
 import pkg490final.Packets.Request.EXTRequestPacketSet;
 import pkg490final.Packets.Request.INFRequestPacketSet;
 import pkg490final.Packets.Request.QRYRequestPacketSet;
+import pkg490final.Packets.Request.RequestPacketSet;
 
 /**
  *
@@ -135,13 +136,24 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
         queryTextBox.setText("Query");
 
-        folderTextBox.setText("File Folder");
+        folderTextBox.setText("d:\\p2p");
+
+        sourcePortTextBox.setText("33000");
 
         jLabel1.setText("Source Port:");
 
         jLabel2.setText("Destination Port:");
 
+        destPortTextBox.setText("49000");
+        destPortTextBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                destPortTextBoxActionPerformed(evt);
+            }
+        });
+
         jLabel3.setText("Directory Server IP:");
+
+        serverIPTextBox.setText("127.0.0.1");
 
         jLabel4.setText("Search:");
 
@@ -236,34 +248,46 @@ public class ClientMainPanel extends javax.swing.JPanel {
             int i = fileTable.getSelectedRow();
             ArrayList<P2PFile> files = new ArrayList<>();
             files.add(p2pFiles.get(i));
-            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.getInteger(sourcePortTextBox.getText()), ip);
+            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
             send(downPacketSet, 2014, p2pFiles.get(i).getIp());
 
         }
     }//GEN-LAST:event_downloadButtonMouseClicked
 
     private void queryButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_queryButtonMouseClicked
-        PacketSet qryPacketSet = new QRYRequestPacketSet(queryTextBox.getText(), Integer.getInteger(sourcePortTextBox.getText()), ip);
+        QRYRequestPacketSet qryPacketSet = new QRYRequestPacketSet(queryTextBox.getText(), Integer.parseInt(sourcePortTextBox.getText()), ip);
         send(qryPacketSet);
     }//GEN-LAST:event_queryButtonMouseClicked
 
     private void informButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_informButtonMouseClicked
         ArrayList<P2PFile> localFiles = IOFunctions.readLocalFiles(folderTextBox.getText());
-        INFRequestPacketSet infPacketSet = new INFRequestPacketSet(localFiles, Integer.getInteger(sourcePortTextBox.getText()), ip);
+        INFRequestPacketSet infPacketSet = new INFRequestPacketSet(localFiles, Integer.parseInt(sourcePortTextBox.getText()), ip);
         send(infPacketSet);
     }//GEN-LAST:event_informButtonMouseClicked
 
     private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
-        EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.getInteger(sourcePortTextBox.getText()), ip);
+        EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.parseInt(sourcePortTextBox.getText()), ip);
         send(extPacketSet);
     }//GEN-LAST:event_disconnectButtonMouseClicked
-    private void send(PacketSet packetSet, int destPort, String destIP) {
+
+    private void destPortTextBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_destPortTextBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_destPortTextBoxActionPerformed
+
+    /**
+     * send method overload for just down request packets.
+     *
+     * @param packetSet packetSet to be sent (only down request packet passed
+     * here)
+     * @param destPort port to send packet to
+     * @param destIP IP to send packet to (client)
+     */
+    private void send(RequestPacketSet packetSet, int destPort, String destIP) {
 
         RDT30Sender client = new RDT30Sender();
 
         try {
-            client.startSender(serverIPTextBox.getText(), Integer.getInteger(sourcePortTextBox.getText()), Integer.getInteger(destPortTextBox.getText()));
-            packetSet.createPackets();
+            client.startSender(destIP, destPort, Integer.getInteger(destPortTextBox.getText()));
             client.initializeSend(packetSet.getPackets());
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -271,17 +295,23 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
     }
 
-    private void send(PacketSet packetSet) {
+    /**
+     * send method for INF, EXIT and QRY request packets.
+     *
+     * @param packetSet packetSet to be sent.
+     */
+    private void send(RequestPacketSet packetSet) {
 
         RDT30Sender client = new RDT30Sender();
 
         try {
-            client.startSender(serverIPTextBox.getText(), Integer.getInteger(sourcePortTextBox.getText()), Integer.getInteger(destPortTextBox.getText()));
+            client.startSender(serverIPTextBox.getText(), Integer.parseInt(sourcePortTextBox.getText()), Integer.parseInt(destPortTextBox.getText()));
             packetSet.createPackets();
             client.initializeSend(packetSet.getPackets());
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
 
     }
 

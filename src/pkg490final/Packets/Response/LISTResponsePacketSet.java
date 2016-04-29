@@ -10,10 +10,14 @@ import pkg490final.PacketUtilities;
  *
  * @author John
  */
-public class LISTResponsePacketSet extends ResponsePacketSet{
+public class LISTResponsePacketSet extends ResponsePacketSet {
 
     public LISTResponsePacketSet(ArrayList<P2PFile> queryResults) {
         super(new ResponseLine(ResponseMethod.LIST), PacketUtilities.p2pFilesToString(queryResults));
+    }
+
+    public LISTResponsePacketSet() {
+
     }
 
 }
