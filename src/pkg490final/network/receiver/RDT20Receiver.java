@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import pkg490final.P2PFile;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.PacketSet;
 import pkg490final.Packets.RequestLine;
@@ -123,18 +124,18 @@ public class RDT20Receiver extends Thread {
     
     public void deliverData(Packet packet) {
         packetsReceived++;
-
-        //receiverPrint("\n@@@ Receiver delivered packet #(" + packetsReceived + ") with: \n'" + packet.getPacketBody() + "'");
-
         packets.add(packet);
         if (packet.isLastPacket()) {
-            
-            //if you dont want the server to stop listening after it receives the last packet in a packet set then delete the next line:  
-            System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
+            //System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
             PacketSet allPackets = new PacketSet(packets);
-            System.out.println(allPackets.data);
-            //DirectoryServer.updateP2PList(allf, MIN_PRIORITY);
-            DirectoryServer.killThread(this.getName());
+            
+            DirectoryServer server = DirectoryServer.getInstance();
+
+            server.writeToMaster(allPackets.convertToP2PFiles());
+            //server.deleteFromMaster(this.getName());
+            //server.findPeer(null);
+            
+            server.killThread(this.getName());
         }
     }
 

@@ -6,6 +6,7 @@
 package pkg490final.Packets;
 
 import java.util.ArrayList;
+import pkg490final.P2PFile;
 
 /**
  * All the information held to make up numerous packets from one long string of
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 public class PacketSet {
 
     private Line line;
-    public String data ="";
+    private String data ="";
     private ArrayList<Packet> packets;
 
     /**
@@ -73,6 +74,10 @@ public class PacketSet {
     public String getPacketBody() {
         return data;
     }
+    
+    public String getData() {
+        return data;
+    }
 
     public void setLine(Line line) {
         this.line = line;
@@ -85,6 +90,17 @@ public class PacketSet {
     public Line getLine() {
         return line;
     }
+    
+    public ArrayList<P2PFile> convertToP2PFiles() {
+        ArrayList<P2PFile> list = new ArrayList<>();
+        String convert = data.replaceAll("[\n]", " ");
+        String[] listString = convert.split(" ");
+        for (int i = 0; i < listString.length-3; i=i+4) {
+            list.add(new P2PFile(listString[i], Long.parseLong(listString[i+1].trim()), listString[i+2], listString[i+3]));         
+        }
+        return list;
+    }
+    
     //for testing purposes
     @Override
     public String toString() {
