@@ -1,16 +1,52 @@
 package pkg490final.network.sender;
 
+import java.awt.BorderLayout;
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
+import pkg490final.IOFunctions;
+import pkg490final.P2PFile;
+import pkg490final.PacketUtilities;
+import pkg490final.Packets.PacketSet;
+import pkg490final.Packets.Request.DOWNRequestPacketSet;
+import pkg490final.Packets.Request.EXTRequestPacketSet;
+import pkg490final.Packets.Request.INFRequestPacketSet;
+import pkg490final.Packets.Request.QRYRequestPacketSet;
+
 /**
  *
  * @author John
  */
 public class ClientMainPanel extends javax.swing.JPanel {
 
+    ArrayList<P2PFile> p2pFiles;
+    String ip;
+
     /**
      * Creates new form ClientMainPanel
      */
     public ClientMainPanel() {
+        ip = PacketUtilities.getPublicIP();
         initComponents();
+    }
+
+    public void updateJTable() {
+        DefaultTableModel model = (DefaultTableModel) fileTable.getModel();
+        model.setRowCount(0);
+        Object rowData[] = new Object[4];
+        for (int i = 0; i < p2pFiles.size(); i++) {
+            rowData[0] = p2pFiles.get(i).getName();
+            rowData[1] = p2pFiles.get(i).getSize();
+            rowData[2] = p2pFiles.get(i).getIp();
+            rowData[3] = p2pFiles.get(i).getHostName();
+            model.addRow(rowData);
+        }
+
     }
 
     /**
@@ -23,14 +59,23 @@ public class ClientMainPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        fileTable = new javax.swing.JTable();
+        queryButton = new javax.swing.JButton();
+        downloadButton = new javax.swing.JButton();
+        informButton = new javax.swing.JButton();
+        queryTextBox = new javax.swing.JTextField();
+        folderTextBox = new javax.swing.JTextField();
+        sourcePortTextBox = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        destPortTextBox = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        serverIPTextBox = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        disconnectButton = new javax.swing.JButton();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        fileTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -38,66 +83,233 @@ public class ClientMainPanel extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "File Name", "File Size (Bytes)", "Host IP", "Host Name"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
 
-        jButton1.setText("Query For Results");
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
-        jButton2.setText("Download Selected File");
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        fileTable.setColumnSelectionAllowed(true);
+        fileTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(fileTable);
+        fileTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (fileTable.getColumnModel().getColumnCount() > 0) {
+            fileTable.getColumnModel().getColumn(0).setPreferredWidth(250);
+            fileTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+            fileTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+            fileTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+        }
 
-        jButton3.setText("Inform And Update Server");
+        queryButton.setText("Query For Results");
+        queryButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                queryButtonMouseClicked(evt);
+            }
+        });
 
-        jTextField1.setText("Query");
+        downloadButton.setText("Download Selected File");
+        downloadButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                downloadButtonMouseClicked(evt);
+            }
+        });
 
-        jTextField2.setText("File Folder");
+        informButton.setText("Inform And Update Server");
+        informButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                informButtonMouseClicked(evt);
+            }
+        });
+
+        queryTextBox.setText("Query");
+
+        folderTextBox.setText("File Folder");
+
+        jLabel1.setText("Source Port:");
+
+        jLabel2.setText("Destination Port:");
+
+        jLabel3.setText("Directory Server IP:");
+
+        jLabel4.setText("Search:");
+
+        jLabel5.setText("Location of Files:");
+
+        disconnectButton.setText("Disconnect ");
+        disconnectButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                disconnectButtonMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1034, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 763, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(queryButton, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                            .addComponent(downloadButton, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                            .addComponent(informButton, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                            .addComponent(disconnectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(folderTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(66, 66, 66)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(serverIPTextBox)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(destPortTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(sourcePortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(119, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(34, 34, 34)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(serverIPTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(2, 2, 2)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(destPortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(sourcePortTextBox))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(downloadButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(queryButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(informButton)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(disconnectButton)
+                            .addComponent(folderTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(28, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
+    private void downloadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_downloadButtonMouseClicked
+        if (fileTable.getSelectedRowCount() == 1) {
+            int i = fileTable.getSelectedRow();
+            ArrayList<P2PFile> files = new ArrayList<>();
+            files.add(p2pFiles.get(i));
+            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.getInteger(sourcePortTextBox.getText()), ip);
+            send(downPacketSet, 2014, p2pFiles.get(i).getIp());
+
+        }
+    }//GEN-LAST:event_downloadButtonMouseClicked
+
+    private void queryButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_queryButtonMouseClicked
+        PacketSet qryPacketSet = new QRYRequestPacketSet(queryTextBox.getText(), Integer.getInteger(sourcePortTextBox.getText()), ip);
+        send(qryPacketSet);
+    }//GEN-LAST:event_queryButtonMouseClicked
+
+    private void informButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_informButtonMouseClicked
+        ArrayList<P2PFile> localFiles = IOFunctions.readLocalFiles(folderTextBox.getText());
+        INFRequestPacketSet infPacketSet = new INFRequestPacketSet(localFiles, Integer.getInteger(sourcePortTextBox.getText()), ip);
+        send(infPacketSet);
+    }//GEN-LAST:event_informButtonMouseClicked
+
+    private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
+        EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.getInteger(sourcePortTextBox.getText()), ip);
+        send(extPacketSet);
+    }//GEN-LAST:event_disconnectButtonMouseClicked
+    private void send(PacketSet packetSet, int destPort, String destIP) {
+
+        RDT30Sender client = new RDT30Sender();
+
+        try {
+            client.startSender(serverIPTextBox.getText(), Integer.getInteger(sourcePortTextBox.getText()), Integer.getInteger(destPortTextBox.getText()));
+            packetSet.createPackets();
+            client.initializeSend(packetSet.getPackets());
+        } catch (Exception ex) {
+            Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void send(PacketSet packetSet) {
+
+        RDT30Sender client = new RDT30Sender();
+
+        try {
+            client.startSender(serverIPTextBox.getText(), Integer.getInteger(sourcePortTextBox.getText()), Integer.getInteger(destPortTextBox.getText()));
+            packetSet.createPackets();
+            client.initializeSend(packetSet.getPackets());
+        } catch (Exception ex) {
+            Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Peer-to-Peer File Sharing Application");
+        frame.add(new ClientMainPanel(), BorderLayout.CENTER);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JTextField destPortTextBox;
+    private javax.swing.JButton disconnectButton;
+    private javax.swing.JButton downloadButton;
+    private javax.swing.JTable fileTable;
+    private javax.swing.JTextField folderTextBox;
+    private javax.swing.JButton informButton;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JButton queryButton;
+    private javax.swing.JTextField queryTextBox;
+    private javax.swing.JTextField serverIPTextBox;
+    private javax.swing.JTextField sourcePortTextBox;
     // End of variables declaration//GEN-END:variables
 }

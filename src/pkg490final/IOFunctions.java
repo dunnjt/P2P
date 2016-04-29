@@ -24,12 +24,33 @@ public class IOFunctions {
      */
     public static ArrayList<P2PFile> readLocalFiles() {
         ArrayList<P2PFile> localFiles = new ArrayList();
-        String temp;
         P2PFile tempFile;
         Scanner input = new Scanner(System.in);
         System.out.println("Enter the path of the files you want to share on the p2p network");
 
         File folder = new File(input.nextLine());
+
+        File[] files = folder.listFiles();
+
+        for (File file : files) {
+            tempFile = new P2PFile(file.getName(), file.length(), PacketUtilities.getPublicIP(), getLocalHostName());
+            tempFile.convertSpaces();
+            localFiles.add(tempFile);
+        }
+        return localFiles;
+    }
+
+    /**
+     * readLocalFiles method which takes in a path and builds an arraylist of
+     * files from the directory specified.
+     *
+     * @param path path of directory
+     * @return arraylist of files
+     */
+    public static ArrayList<P2PFile> readLocalFiles(String path) {
+        ArrayList<P2PFile> localFiles = new ArrayList();
+        P2PFile tempFile;
+        File folder = new File(path);
 
         File[] files = folder.listFiles();
 

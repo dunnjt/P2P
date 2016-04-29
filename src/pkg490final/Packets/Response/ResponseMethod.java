@@ -11,8 +11,7 @@ public enum ResponseMethod {
     LIST(100),
     OK(200),
     ACK(300),
-    ERROR(400),
-    SEND(500);
+    ERROR(400);
 
     private final int statusCode;
 

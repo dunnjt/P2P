@@ -8,7 +8,7 @@ package pkg490final.Packets.Request;
  */
 public enum RequestMethod {
 
-    INF, QRY, EXT, REQ, DOWN;
+    INF, QRY, EXT, DOWN;
 
 
 }

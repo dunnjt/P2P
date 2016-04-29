@@ -6,10 +6,8 @@ package pkg490final.Packets;
  * @author john
  */
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import pkg490final.IOFunctions;
-import pkg490final.PacketUtilities;
 import pkg490final.Packets.Request.RequestMethod;
 
 public class RequestLine extends Line {

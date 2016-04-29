@@ -183,7 +183,7 @@ public class RDT30Sender {
 
     public int getPacketsSent() {
         return packetsSent;
-    }
+    }    
 
     public Packet getCurrentPacket() {
         return currentPackets.get(packetsSent);
