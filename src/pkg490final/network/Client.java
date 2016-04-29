@@ -26,7 +26,7 @@ public class Client {
             target = "127.0.0.1";
             //if using public address, must forward port 33000 to local ip on your router to receive acks from server.
             RDT30Sender sender = new RDT30Sender();
-            sender.startSender(target, 49000, 33000);
+            sender.startSender(target, 2014, 33000);
 
             //read local files from a directory and create a inform and update packet set.
             PacketSet p = new INFRequestPacketSet(IOFunctions.readLocalFiles(), 33000, target);

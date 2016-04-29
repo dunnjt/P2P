@@ -32,7 +32,8 @@ public class ClientMainPanel extends javax.swing.JPanel {
      * Creates new form ClientMainPanel
      */
     public ClientMainPanel() {
-        ip = PacketUtilities.getPublicIP();
+        ip = "127.0.0.1";
+//        ip = PacketUtilities.getPublicIP();
         initComponents();
     }
 
@@ -144,7 +145,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
         jLabel2.setText("Destination Port:");
 
-        destPortTextBox.setText("49000");
+        destPortTextBox.setText("2014");
         destPortTextBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 destPortTextBoxActionPerformed(evt);
@@ -287,7 +288,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         RDT30Sender client = new RDT30Sender();
 
         try {
-            client.startSender(destIP, destPort, Integer.getInteger(destPortTextBox.getText()));
+            client.startSender(destIP, destPort, Integer.parseInt(destPortTextBox.getText()));
             client.initializeSend(packetSet.getPackets());
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -305,7 +306,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         RDT30Sender client = new RDT30Sender();
 
         try {
-            client.startSender(serverIPTextBox.getText(), Integer.parseInt(sourcePortTextBox.getText()), Integer.parseInt(destPortTextBox.getText()));
+            client.startSender(serverIPTextBox.getText(), Integer.parseInt(destPortTextBox.getText()), Integer.parseInt(sourcePortTextBox.getText()));
             packetSet.createPackets();
             client.initializeSend(packetSet.getPackets());
         } catch (Exception ex) {
