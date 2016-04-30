@@ -93,7 +93,7 @@ public class RDT20Receiver extends Thread {
         DirectoryServer server = DirectoryServer.getInstance();
         RDT30Sender sender = new RDT30Sender();
         ResponsePacketSet ResPS = new ERRORResponsePacketSet();
-        int ackPort = server.getIndexOfKey(this.getName()) * 1000 + 5014;
+        int ackPort = 5014;
         System.out.println("port used to accept ACKS on is: " + ackPort);
         try {
             sender.startSender(reqPS.getRequestLine().getIpString(), reqPS.getRequestLine().getSourcePort(), ackPort);

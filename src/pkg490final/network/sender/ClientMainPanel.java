@@ -25,13 +25,13 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
     ArrayList<P2PFile> p2pFiles;
     String ip;
-    int ackPort = 5014;
+    int ackPort;
 
     /**
      * Creates new form ClientMainPanel
      */
     public ClientMainPanel() {
-        
+
         ip = PacketUtilities.getLocalIP();
 //        ip = PacketUtilities.getPublicIP();
         initComponents();
@@ -330,7 +330,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        receive(ReqPacketSet, Integer.parseInt(destPortTextBox.getText()), serverIPTextBox.getText());
+        receive(ReqPacketSet, 5014, serverIPTextBox.getText());
     }
 
     private void receive(RequestPacketSet ReqPacketSet, int destPort, String destIP) {
@@ -355,8 +355,10 @@ public class ClientMainPanel extends javax.swing.JPanel {
         responseLabel.setForeground(Color.green);
 
         if (reqLine.getMethod() == RequestMethod.INF && responsePacketSet.getResponseMethod() == ResponseMethod.OK) {
-            responseLabel.setText("Inform and Update Successful");
-            ackPort = Integer.parseInt(responsePacketSet.getPacketBody());
+            String ackStringPort = responsePacketSet.getPacketBody();
+            ackPort = Integer.parseInt(ackStringPort);
+
+            responseLabel.setText("Inform and Update Successful " + ackPort);
         } else if (reqLine.getMethod() == RequestMethod.QRY && responsePacketSet.getResponseMethod() == ResponseMethod.LIST) {
             p2pFiles = responsePacketSet.convertToP2PFiles();
             updateJTable();

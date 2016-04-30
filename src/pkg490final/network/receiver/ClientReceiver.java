@@ -26,7 +26,7 @@ public class ClientReceiver extends RDT20Receiver {
     public ClientReceiver(String name, int receivingPort, int sendingPort, String serverIP) throws SocketException {
 
         super(name, receivingPort);
-        this.sendingPort = 5014;
+        this.sendingPort = sendingPort;
         this.serverIP = serverIP;
         System.out.println("serverIP: " + serverIP +"\nreceiving Port: " + receivingPort + "\n sending port: " + sendingPort);
     }
