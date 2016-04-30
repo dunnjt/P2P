@@ -29,7 +29,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
      * Creates new form ClientMainPanel
      */
     public ClientMainPanel() {
-        ip = "127.0.0.1";
+        ip = "192.168.1.109";
 //        ip = PacketUtilities.getPublicIP();
         initComponents();
     }
@@ -243,9 +243,9 @@ public class ClientMainPanel extends javax.swing.JPanel {
                             .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(serverIPTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(informButton)
-                            .addComponent(jLabel5))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(informButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(disconnectButton)
@@ -334,7 +334,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         ResponsePacketSet responsePacketSet = null;
 
         try {
-            ClientReceiver rcvr = new ClientReceiver(ReqPacketSet.responseExpected().name(), Integer.parseInt(sourcePortTextBox.getText()));
+            ClientReceiver rcvr = new ClientReceiver(ReqPacketSet.responseExpected().name(), Integer.parseInt(sourcePortTextBox.getText()), Integer.parseInt(destPortTextBox.getText()), serverIPTextBox.getText());
             rcvr.run();
             System.out.println("CLIENT RECEIVER STARTED, EXPECTED RESPONSE: " + ReqPacketSet.responseExpected().name());
 

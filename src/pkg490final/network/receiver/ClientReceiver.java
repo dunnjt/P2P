@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.PacketSet;
-import pkg490final.Packets.RequestLine;
 import pkg490final.Packets.Response.ResponseLine;
 import pkg490final.Packets.Response.ResponseMethod;
 
@@ -25,9 +24,11 @@ public class ClientReceiver extends RDT20Receiver {
     }
 
     public ClientReceiver(String name, int receivingPort, int sendingPort, String serverIP) throws SocketException {
+
         super(name, receivingPort);
-        this.sendingPort = sendingPort;
+        this.sendingPort = 5014;
         this.serverIP = serverIP;
+        System.out.println("serverIP: " + serverIP +"\nreceiving Port: " + receivingPort + "\n sending port: " + sendingPort);
     }
 
     /**
@@ -93,7 +94,8 @@ public class ClientReceiver extends RDT20Receiver {
         ack.setSeqNumber(seqNumber);
 
         //sends ACK back to ip and port specified in request line.
-        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), InetAddress.getByName(serverIP), 5014);
+        System.out.println("SENDING ACK----------------\n " + serverIP + " " + sendingPort);
+        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), InetAddress.getByName(serverIP), sendingPort);
 
         sendingSocket.send(ackPacket);
     }
