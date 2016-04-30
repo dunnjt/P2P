@@ -105,7 +105,7 @@ public class RDT20Receiver extends Thread {
 
         if (reqPS.getRequestMethod() == RequestMethod.INF) {
             server.writeToMaster(reqPS.convertToP2PFiles());
-            ResPS = new OKResponsePacketSet();
+            ResPS = new OKResponsePacketSet(ackPort);
         } else if (reqPS.getRequestMethod() == RequestMethod.QRY) {
             ResPS = new LISTResponsePacketSet(server.qryMasterList(reqPS.getPacketBody()));
 

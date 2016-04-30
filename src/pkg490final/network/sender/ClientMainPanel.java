@@ -2,7 +2,6 @@ package pkg490final.network.sender;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -357,6 +356,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
         if (reqLine.getMethod() == RequestMethod.INF && responsePacketSet.getResponseMethod() == ResponseMethod.OK) {
             responseLabel.setText("Inform and Update Successful");
+            ackPort = Integer.parseInt(responsePacketSet.getPacketBody());
         } else if (reqLine.getMethod() == RequestMethod.QRY && responsePacketSet.getResponseMethod() == ResponseMethod.LIST) {
             p2pFiles = responsePacketSet.convertToP2PFiles();
             updateJTable();
