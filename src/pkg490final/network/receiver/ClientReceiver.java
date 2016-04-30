@@ -1,18 +1,34 @@
 //Author: John Madsen
 package pkg490final.network.receiver;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.PacketSet;
 import pkg490final.Packets.RequestLine;
+import pkg490final.Packets.Response.ResponseLine;
+import pkg490final.Packets.Response.ResponseMethod;
 
 public class ClientReceiver extends RDT20Receiver {
 
+    private PacketSet packetSet;
+    private int sendingPort;
+    private String sendingIP;
+
     public ClientReceiver(String name, int receivingPort) throws SocketException {
         super(name, receivingPort);
+    }
+
+    public ClientReceiver(String name, int receivingPort, int sendingPort, String sendingIP) throws SocketException {
+        super(name, receivingPort);
+        this.sendingPort = sendingPort;
+        this.sendingIP = sendingIP;
+
     }
 
     /**
@@ -30,8 +46,8 @@ public class ClientReceiver extends RDT20Receiver {
         packets.add(packet);
         if (packet.isLastPacket()) {
             System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
-            PacketSet allPackets = PacketSet.createPacketSet(packets);
-            System.out.println(allPackets.getData());
+            packetSet = PacketSet.createPacketSet(packets);
+            stopListening();
         }
     }
 
@@ -54,7 +70,7 @@ public class ClientReceiver extends RDT20Receiver {
                 byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
                 String temp = new String(packetData);
                 Packet reconstructedPacket = new Packet(temp);
-                reqLine = (RequestLine) reconstructedPacket.getLine();
+//                reqLine = (RequestLine) reconstructedPacket.getLine();
                 currentPacket = reconstructedPacket;
 
                 state.action(this);
@@ -62,6 +78,29 @@ public class ClientReceiver extends RDT20Receiver {
         } catch (Exception e) {
             stopListening();
         }
+    }
+
+    /**
+     * Send ACK response packet to the client to respond that the last packet
+     * has been received. The ACK number depends on what the receiver was
+     * expecting and what it actually received.
+     *
+     * @param seqNumber the sequence number of the ACK to be sent.
+     */
+    public void sendACK(int seqNumber) throws UnknownHostException, IOException {
+
+        receiverPrint("sending ACK: " + seqNumber);
+        Packet ack = new Packet(new ResponseLine(ResponseMethod.ACK), " ", true);
+        ack.setSeqNumber(seqNumber);
+
+        //sends ACK back to ip and port specified in request line.
+        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), InetAddress.getByName(sendingIP), sendingPort);
+
+        sendingSocket.send(ackPacket);
+    }
+
+    public PacketSet getPacketSet() {
+        return packetSet;
     }
 
 }

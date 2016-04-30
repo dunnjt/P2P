@@ -1,9 +1,8 @@
 package pkg490final.network.sender;
 
 import java.awt.BorderLayout;
-import java.io.IOException;
+import java.awt.Color;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,12 +11,11 @@ import javax.swing.table.DefaultTableModel;
 import pkg490final.IOFunctions;
 import pkg490final.P2PFile;
 import pkg490final.PacketUtilities;
-import pkg490final.Packets.PacketSet;
-import pkg490final.Packets.Request.DOWNRequestPacketSet;
-import pkg490final.Packets.Request.EXTRequestPacketSet;
-import pkg490final.Packets.Request.INFRequestPacketSet;
-import pkg490final.Packets.Request.QRYRequestPacketSet;
-import pkg490final.Packets.Request.RequestPacketSet;
+import pkg490final.Packets.Request.*;
+import pkg490final.Packets.RequestLine;
+import pkg490final.Packets.Response.ResponseMethod;
+import pkg490final.Packets.Response.ResponsePacketSet;
+import pkg490final.network.receiver.ClientReceiver;
 
 /**
  *
@@ -32,8 +30,8 @@ public class ClientMainPanel extends javax.swing.JPanel {
      * Creates new form ClientMainPanel
      */
     public ClientMainPanel() {
-        ip = "127.0.0.1";
-//        ip = PacketUtilities.getPublicIP();
+//        ip = "127.0.0.1";
+        ip = PacketUtilities.getPublicIP();
         initComponents();
     }
 
@@ -76,6 +74,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         disconnectButton = new javax.swing.JButton();
+        responseLabel = new javax.swing.JLabel();
 
         fileTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -184,11 +183,12 @@ public class ClientMainPanel extends javax.swing.JPanel {
                             .addComponent(informButton, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
                             .addComponent(disconnectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(queryTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(folderTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(folderTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+                            .addComponent(responseLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(66, 66, 66)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -207,9 +207,11 @@ public class ClientMainPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(34, 34, 34)
+                        .addComponent(responseLabel)
+                        .addGap(7, 7, 7)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
                             .addComponent(jLabel3))
@@ -227,7 +229,6 @@ public class ClientMainPanel extends javax.swing.JPanel {
                             .addComponent(sourcePortTextBox))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addComponent(downloadButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(queryButton)
@@ -250,7 +251,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
             ArrayList<P2PFile> files = new ArrayList<>();
             files.add(p2pFiles.get(i));
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
-            send(downPacketSet, 2014, p2pFiles.get(i).getIp());
+            send(downPacketSet, 33000, p2pFiles.get(i).getIp());
 
         }
     }//GEN-LAST:event_downloadButtonMouseClicked
@@ -267,8 +268,11 @@ public class ClientMainPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_informButtonMouseClicked
 
     private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
-        EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.parseInt(sourcePortTextBox.getText()), ip);
-        send(extPacketSet);
+        p2pFiles = new ArrayList<>();
+        p2pFiles.add(new P2PFile("songname", 123456789, "127.0.0.1", "johnsPC"));
+        updateJTable();
+//        EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.parseInt(sourcePortTextBox.getText()), ip);
+//        send(extPacketSet);
     }//GEN-LAST:event_disconnectButtonMouseClicked
 
     private void destPortTextBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_destPortTextBoxActionPerformed
@@ -293,7 +297,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        receive(packetSet, destPort, destIP);
     }
 
     /**
@@ -301,19 +305,56 @@ public class ClientMainPanel extends javax.swing.JPanel {
      *
      * @param packetSet packetSet to be sent.
      */
-    private void send(RequestPacketSet packetSet) {
+    private void send(RequestPacketSet ReqPacketSet) {
 
         RDT30Sender client = new RDT30Sender();
 
         try {
             client.startSender(serverIPTextBox.getText(), Integer.parseInt(destPortTextBox.getText()), Integer.parseInt(sourcePortTextBox.getText()));
-            packetSet.createPackets();
-            client.initializeSend(packetSet.getPackets());
+            ReqPacketSet.createPackets();
+            client.initializeSend(ReqPacketSet.getPackets());
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        receive(ReqPacketSet, 2014, ip);
+    }
 
+    private void receive(RequestPacketSet ReqPacketSet, int destPort, String destIP) {
+        ResponsePacketSet responsePacketSet = null;
+
+        try {
+            ClientReceiver rcvr = new ClientReceiver(ReqPacketSet.responseExpected().name(), Integer.parseInt(sourcePortTextBox.getText()));
+            rcvr.run();
+            System.out.println("CLIENT RECEIVER STARTED, EXPECTED RESPONSE: " + ReqPacketSet.responseExpected().name());
+
+            responsePacketSet = (ResponsePacketSet) rcvr.getPacketSet();
+            rcvr.stopListening();
+        } catch (SocketException ex) {
+            Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        RequestLine reqLine = (RequestLine) ReqPacketSet.getLine();
+        System.out.println("------------------------------------------RESPONSE METHOD RCVD = " + responsePacketSet.getResponseMethod());
+        clientResponse(reqLine, responsePacketSet);
+    }
+
+    private void clientResponse(RequestLine reqLine, ResponsePacketSet responsePacketSet) {
+        responseLabel.setForeground(Color.green);
+
+        if (reqLine.getMethod() == RequestMethod.INF && responsePacketSet.getResponseMethod() == ResponseMethod.OK) {
+            responseLabel.setText("Inform and Update Successful");
+        } else if (reqLine.getMethod() == RequestMethod.QRY && responsePacketSet.getResponseMethod() == ResponseMethod.LIST) {
+            p2pFiles = responsePacketSet.convertToP2PFiles();
+            updateJTable();
+            responseLabel.setText("Query Successful, choose a file to download");
+
+        } else if (reqLine.getMethod() == RequestMethod.DOWN && responsePacketSet.getResponseMethod() == ResponseMethod.OK) {
+            responseLabel.setText("Download Request Successful");
+        } else if (reqLine.getMethod() == RequestMethod.EXT && responsePacketSet.getResponseMethod() == ResponseMethod.OK) {
+            responseLabel.setText("Successfully Disconnected From Server");
+        } else {
+            responseLabel.setForeground(Color.red);
+            responseLabel.setText("Error Occured, please try again");
+        }
     }
 
     public static void main(String[] args) {
@@ -340,6 +381,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton queryButton;
     private javax.swing.JTextField queryTextBox;
+    private javax.swing.JLabel responseLabel;
     private javax.swing.JTextField serverIPTextBox;
     private javax.swing.JTextField sourcePortTextBox;
     // End of variables declaration//GEN-END:variables

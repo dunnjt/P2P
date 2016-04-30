@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import pkg490final.P2PFile;
 import pkg490final.PacketUtilities;
 import pkg490final.Packets.RequestLine;
+import pkg490final.Packets.Response.ResponseMethod;
 import pkg490final.network.receiver.RDT20Receiver;
 
 /**
@@ -23,5 +24,9 @@ public class INFRequestPacketSet extends RequestPacketSet {
     public INFRequestPacketSet() {
     }
 
+    @Override
+    public ResponseMethod responseExpected() {
+        return ResponseMethod.OK;
+    }
 
 }

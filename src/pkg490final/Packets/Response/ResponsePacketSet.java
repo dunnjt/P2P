@@ -21,4 +21,9 @@ public class ResponsePacketSet extends PacketSet {
     public ResponsePacketSet(){
         
     }
+    
+    public ResponseMethod getResponseMethod(){
+        ResponseLine resLine = (ResponseLine)getLine();
+        return resLine.getMethod();
+    }
 }

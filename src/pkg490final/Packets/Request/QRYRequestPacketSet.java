@@ -3,6 +3,7 @@ package pkg490final.Packets.Request;
 
 import java.net.SocketException;
 import pkg490final.Packets.RequestLine;
+import pkg490final.Packets.Response.ResponseMethod;
 import pkg490final.network.receiver.ClientReceiver;
 import pkg490final.network.receiver.RDT20Receiver;
 
@@ -20,7 +21,10 @@ public class QRYRequestPacketSet extends RequestPacketSet{
     public QRYRequestPacketSet(){
     }
 
-
+    @Override
+    public ResponseMethod responseExpected() {
+        return ResponseMethod.LIST;
+    }
 
 
 }

@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.Response.ResponseMethod;
 
@@ -70,7 +68,9 @@ public class RDT30Sender {
         if (sendingSocket != null) {
             sendingSocket.close();
         }
-    }
+        if (receivingSocket != null) {
+            receivingSocket.close();
+        }    }
 
     /**
      * Initialize a sending sequence in order to send a list of packets. Set
@@ -94,6 +94,8 @@ public class RDT30Sender {
 
         }
         senderPrint("All packets sent and received.");
+        stopSender();
+        
 
     }
 
@@ -120,7 +122,7 @@ public class RDT30Sender {
         setTimer();
 
 //         Minor pause for easier visualization only
-        Thread.sleep(1200);
+//        Thread.sleep(1200);
     }
 
     /**
