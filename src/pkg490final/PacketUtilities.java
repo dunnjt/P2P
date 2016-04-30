@@ -4,10 +4,14 @@ package pkg490final;
 import pkg490final.Packets.Response.ResponseLine;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import pkg490final.Packets.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pkg490final.Packets.Line;
 
 public class PacketUtilities {
@@ -87,6 +91,16 @@ public class PacketUtilities {
             System.out.println("unable to get public IP");
         }
         return null;
+    }
+
+    public static String getLocalIP() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(PacketUtilities.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+
     }
 
     /**

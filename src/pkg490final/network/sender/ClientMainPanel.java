@@ -2,6 +2,7 @@ package pkg490final.network.sender;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -10,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import pkg490final.IOFunctions;
 import pkg490final.P2PFile;
+import pkg490final.PacketUtilities;
 import pkg490final.Packets.Request.*;
 import pkg490final.Packets.RequestLine;
 import pkg490final.Packets.Response.ResponseMethod;
@@ -24,12 +26,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
     ArrayList<P2PFile> p2pFiles;
     String ip;
+    int ackPort = 5014;
 
     /**
      * Creates new form ClientMainPanel
      */
     public ClientMainPanel() {
-        ip = "192.168.1.109";
+        
+        ip = PacketUtilities.getLocalIP();
 //        ip = PacketUtilities.getPublicIP();
         initComponents();
     }
@@ -327,14 +331,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        receive(ReqPacketSet, 4014, ip);
+        receive(ReqPacketSet, Integer.parseInt(destPortTextBox.getText()), serverIPTextBox.getText());
     }
 
     private void receive(RequestPacketSet ReqPacketSet, int destPort, String destIP) {
         ResponsePacketSet responsePacketSet = null;
 
         try {
-            ClientReceiver rcvr = new ClientReceiver(ReqPacketSet.responseExpected().name(), Integer.parseInt(sourcePortTextBox.getText()), Integer.parseInt(destPortTextBox.getText()), serverIPTextBox.getText());
+            ClientReceiver rcvr = new ClientReceiver(ReqPacketSet.responseExpected().name(), Integer.parseInt(sourcePortTextBox.getText()), destPort, destIP);
             rcvr.run();
             System.out.println("CLIENT RECEIVER STARTED, EXPECTED RESPONSE: " + ReqPacketSet.responseExpected().name());
 
