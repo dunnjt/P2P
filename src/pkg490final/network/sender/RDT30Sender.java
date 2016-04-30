@@ -24,8 +24,8 @@ import pkg490final.Packets.Response.ResponseMethod;
  */
 public class RDT30Sender {
 
-    private int receiverPortNumber = 0; // port to receive packets from server on.
-    private int sendingPortNumber = 0; // port to send packets to server on.
+    private int sourcePort = 0; // port to receive packets from server on.
+    private int destinationPort = 0; // port to send packets to server on.
     private DatagramSocket sendingSocket = null;
     private DatagramSocket receivingSocket = null;
     private InetAddress internetAddress = null;
@@ -47,17 +47,17 @@ public class RDT30Sender {
      * server. Also set the sending port and receiving port.
      *
      * @param targetAddress local IP address of directory Server.
-     * @param sendingPortNumber port to use to send data to directory server.
+     * @param destinationPort port to use to send data to directory server.
      * @param receiverPortNumber port to include in requestLine for directory
      * server to contact the sender back on.
      */
-    public void startSender(String targetAddress, int sendingPortNumber, int receiverPortNumber) throws SocketException, UnknownHostException {
+    public void startSender(String targetAddress, int destinationPort, int sourcePort) throws SocketException, UnknownHostException {
 
         sendingSocket = new DatagramSocket();
-        receivingSocket = new DatagramSocket(receiverPortNumber);
+        receivingSocket = new DatagramSocket(this.sourcePort);
         internetAddress = InetAddress.getByName(targetAddress);
-        this.receiverPortNumber = receiverPortNumber;
-        this.sendingPortNumber = sendingPortNumber;
+        this.sourcePort = sourcePort;
+        this.destinationPort = destinationPort;
     }
 
     /**
@@ -114,7 +114,7 @@ public class RDT30Sender {
 
         senderPrint("Sender sending packet(" + (packetsSent + 1) + "): '\n" + getCurrentPacket().toString() + "\n'");
 
-        DatagramPacket packet = new DatagramPacket(packetData, packetData.length, internetAddress, sendingPortNumber);
+        DatagramPacket packet = new DatagramPacket(packetData, packetData.length, internetAddress, destinationPort);
         sendingSocket.send(packet);
 
         startTime = System.currentTimeMillis(); //used for sample RTT

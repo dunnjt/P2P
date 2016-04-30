@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.PacketSet;
+import pkg490final.Packets.Request.RequestPacketSet;
 import pkg490final.Packets.RequestLine;
 import pkg490final.Packets.Response.ResponseLine;
 import pkg490final.Packets.Response.ResponseMethod;
@@ -121,7 +122,7 @@ public class RDT20Receiver extends Thread {
         packets.add(packet);
         if (packet.isLastPacket()) {
             //System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
-            PacketSet allPackets = PacketSet.createPacketSet(packets);
+            RequestPacketSet allPackets = (RequestPacketSet) PacketSet.createPacketSet(packets);
 
             DirectoryServer server = DirectoryServer.getInstance();
 

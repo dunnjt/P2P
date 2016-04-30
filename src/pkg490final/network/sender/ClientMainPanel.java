@@ -228,7 +228,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(responseLabel)
                         .addGap(71, 71, 71)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -282,11 +282,11 @@ public class ClientMainPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_informButtonMouseClicked
 
     private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
-        p2pFiles = new ArrayList<>();
-        p2pFiles.add(new P2PFile("songname", 123456789, "127.0.0.1", "johnsPC"));
-        updateJTable();
-//        EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.parseInt(sourcePortTextBox.getText()), ip);
-//        send(extPacketSet);
+//        p2pFiles = new ArrayList<>();
+//        p2pFiles.add(new P2PFile("songname", 123456789, "127.0.0.1", "johnsPC"));
+//        updateJTable();
+        EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.parseInt(sourcePortTextBox.getText()), ip);
+        send(extPacketSet);
     }//GEN-LAST:event_disconnectButtonMouseClicked
 
     private void destPortTextBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_destPortTextBoxActionPerformed
