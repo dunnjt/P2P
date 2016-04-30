@@ -18,17 +18,16 @@ public class ClientReceiver extends RDT20Receiver {
 
     private PacketSet packetSet;
     private int sendingPort;
-    private String sendingIP;
+    private String serverIP;
 
     public ClientReceiver(String name, int receivingPort) throws SocketException {
         super(name, receivingPort);
     }
 
-    public ClientReceiver(String name, int receivingPort, int sendingPort, String sendingIP) throws SocketException {
+    public ClientReceiver(String name, int receivingPort, int sendingPort, String serverIP) throws SocketException {
         super(name, receivingPort);
         this.sendingPort = sendingPort;
-        this.sendingIP = sendingIP;
-
+        this.serverIP = serverIP;
     }
 
     /**
@@ -94,7 +93,7 @@ public class ClientReceiver extends RDT20Receiver {
         ack.setSeqNumber(seqNumber);
 
         //sends ACK back to ip and port specified in request line.
-        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), InetAddress.getByName(sendingIP), sendingPort);
+        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), InetAddress.getByName(serverIP), 5014);
 
         sendingSocket.send(ackPacket);
     }

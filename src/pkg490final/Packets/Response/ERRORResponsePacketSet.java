@@ -11,11 +11,11 @@ import pkg490final.Packets.Line;
  */
 public class ERRORResponsePacketSet extends ResponsePacketSet {
 
-    public ERRORResponsePacketSet(Line line, String data) {
+    public ERRORResponsePacketSet() {
         super(new ResponseLine(ResponseMethod.LIST), "");
     }
 
-    public ERRORResponsePacketSet() {
-
-    }
+//    public ERRORResponsePacketSet() {
+//
+//    }
 }

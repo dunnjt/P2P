@@ -31,9 +31,9 @@ public abstract class PacketSet {
         this.data = data;
         createPackets();
     }
-    
-    public PacketSet(){
-        
+
+    public PacketSet() {
+
     }
 
     /**
@@ -49,10 +49,9 @@ public abstract class PacketSet {
         }
     }
 
-    public static PacketSet createPacketSet(ArrayList<Packet> packets){
+    public static PacketSet createPacketSet(ArrayList<Packet> packets) {
         return PacketSetFactory.createPacketSet(packets);
     }
-
 
     /**
      * creates all the 128 byte packets from the data and request/response lines
@@ -64,19 +63,25 @@ public abstract class PacketSet {
         packets = new ArrayList();
         int counter = 0;
         int bodyLength = 128 - getLine().size();
-
-        while (counter < getPacketBody().length()) {
-            if (counter + bodyLength > getPacketBody().length() + 1) {
-                packets.add(new Packet(line, getPacketBody().substring(counter), false));
-            } else {
-                packets.add(new Packet(line, getPacketBody().substring(counter, counter + bodyLength), true));
+        if (getPacketBody().length() == 0) {
+            packets.add(new Packet(line, "\u0004", true));
+        } else {
+            while (counter < getPacketBody().length()) {
+                if (counter + bodyLength > getPacketBody().length() + 1) {
+                    packets.add(new Packet(line, getPacketBody().substring(counter), false));
+                } else {
+                    packets.add(new Packet(line, getPacketBody().substring(counter, counter + bodyLength), true));
+                }
+                counter += bodyLength;
             }
-            counter += bodyLength;
         }
     }
 
-    public void setPacketBody(String packetBody) {
+    public void setPacketBodyEnd(String packetBody) {
         this.data = packetBody + "\u0004";
+    }
+    public void setPacketBody(String packetBody){
+        this.data = packetBody;
     }
 
     public String getPacketBody() {

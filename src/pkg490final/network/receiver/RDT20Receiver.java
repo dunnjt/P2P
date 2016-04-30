@@ -6,12 +6,20 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.PacketSet;
+import pkg490final.Packets.Request.RequestMethod;
 import pkg490final.Packets.Request.RequestPacketSet;
 import pkg490final.Packets.RequestLine;
+import pkg490final.Packets.Response.ERRORResponsePacketSet;
+import pkg490final.Packets.Response.LISTResponsePacketSet;
+import pkg490final.Packets.Response.OKResponsePacketSet;
 import pkg490final.Packets.Response.ResponseLine;
 import pkg490final.Packets.Response.ResponseMethod;
+import pkg490final.Packets.Response.ResponsePacketSet;
+import pkg490final.network.sender.RDT30Sender;
 
 /**
  * RDT20 modified to have no checksums because UDP handles corruption. This
@@ -60,53 +68,6 @@ public class RDT20Receiver extends Thread {
         }
     }
 
-//    /**
-//     * Once an in order packet is received, it is added to the master list of
-//     * packets for later extraction. if its the last packet, the receiver stops
-//     * listening and makes a packetSet from the list to extract the data.
-//     *
-//     * @param packet: in order packet received.
-//     */
-//    public void deliverData(Packet packet) {
-//        packetsReceived++;
-//
-//        receiverPrint("\n@@@ Receiver delivered packet #(" + packetsReceived + ") with: \n'" + packet + "'");
-//
-//        packets.add(packet);
-//        if (packet.isLastPacket()) {
-//            System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
-//            PacketSet allPackets = new PacketSet(packets);
-//            System.out.println(allPackets.data);
-//        }
-//    }
-    /**
-     * starts the thread to begin listening for packets. Once a packet is
-     * received the requestLine is saved and this class is passed to the current
-     * state to see if it was the correct packet.
-     *
-     */
-//    @Override
-//    public void run() {
-//        try {
-//            receivingSocket = new DatagramSocket(receivingPort);
-//            while (true) {
-//                receiverPrint("Receiver waiting for packet");
-//                byte[] buf = new byte[128];
-//                // receive request
-//                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-//                receivingSocket.receive(packet);
-//                byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
-//                String temp = new String(packetData);
-//                Packet reconstructedPacket = new Packet(temp);
-//                reqLine = (RequestLine) reconstructedPacket.getLine();
-//                currentPacket = reconstructedPacket;
-//
-//                state.action(this);
-//            }
-//        } catch (Exception e) {
-//            stopListening();
-//        }
-//    }
     public void run() {
         System.out.println("Receiver " + this.getName() + " waiting for packet");
     }
@@ -122,16 +83,47 @@ public class RDT20Receiver extends Thread {
         packets.add(packet);
         if (packet.isLastPacket()) {
             //System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
+            stopListening();
             RequestPacketSet allPackets = (RequestPacketSet) PacketSet.createPacketSet(packets);
-
-            DirectoryServer server = DirectoryServer.getInstance();
-
-            server.writeToMaster(allPackets.convertToP2PFiles());
-            //server.deleteFromMaster(this.getName());
-            //server.findPeer(null);
-
-            server.killThread(this.getName());
+            responseProcedure(allPackets);
         }
+    }
+
+    public void responseProcedure(RequestPacketSet reqPS) {
+        DirectoryServer server = DirectoryServer.getInstance();
+        RDT30Sender sender = new RDT30Sender();
+        ResponsePacketSet ResPS = new ERRORResponsePacketSet();
+        int ackPort = server.getIndexOfKey(this.getName()) * 1000 + 5014;
+        System.out.println("port used to accept ACKS on is: " + ackPort);
+        try {
+            sender.startSender(reqPS.getRequestLine().getIpString(), reqPS.getRequestLine().getSourcePort(), ackPort);
+        } catch (SocketException ex) {
+            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (reqPS.getRequestMethod() == RequestMethod.INF) {
+            server.writeToMaster(reqPS.convertToP2PFiles());
+            ResPS = new OKResponsePacketSet();
+        } else if (reqPS.getRequestMethod() == RequestMethod.QRY) {
+            ResPS = new LISTResponsePacketSet(server.qryMasterList(reqPS.getPacketBody()));
+
+        }
+        try {
+            sender.initializeSend(ResPS.getPackets());
+        } catch (IOException ex) {
+            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        sender.stopSender();
+        try {
+            server.restartReceiver(this.getName(), receivingPort);
+        } catch (SocketException ex) {
+            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     /**
@@ -160,6 +152,7 @@ public class RDT20Receiver extends Thread {
     public void setState(ReceiverState state) {
         this.state = state;
     }
+   
 
     /**
      * simple method to append @@@ in front of messages by the receiver to

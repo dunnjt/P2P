@@ -60,6 +60,9 @@ public class RequestLine extends Line {
     public Inet4Address getIp() throws UnknownHostException {
         return (Inet4Address) Inet4Address.getByName(ip);
     }
+    public String getIpString(){
+        return ip;
+    }
 
     public String getHostName() {
         return hostName;

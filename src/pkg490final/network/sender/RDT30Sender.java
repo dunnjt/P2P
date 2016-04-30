@@ -54,7 +54,7 @@ public class RDT30Sender {
     public void startSender(String targetAddress, int destinationPort, int sourcePort) throws SocketException, UnknownHostException {
 
         sendingSocket = new DatagramSocket();
-        receivingSocket = new DatagramSocket(this.sourcePort);
+        receivingSocket = new DatagramSocket(sourcePort);
         internetAddress = InetAddress.getByName(targetAddress);
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;
@@ -113,6 +113,7 @@ public class RDT30Sender {
         byte[] packetData = getCurrentPacket().toBytes();
 
         senderPrint("Sender sending packet(" + (packetsSent + 1) + "): '\n" + getCurrentPacket().toString() + "\n'");
+        String s = new String(packetData);
 
         DatagramPacket packet = new DatagramPacket(packetData, packetData.length, internetAddress, destinationPort);
         sendingSocket.send(packet);

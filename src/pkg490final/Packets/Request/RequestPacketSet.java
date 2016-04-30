@@ -27,6 +27,9 @@ public abstract class RequestPacketSet extends PacketSet {
         RequestLine reqLine = (RequestLine)this.getLine();
         return reqLine.getMethod();
     }
+    public RequestLine getRequestLine(){
+        return (RequestLine)this.getLine();
+    }
 
 //    public abstract ClientReceiver startReceivingThread(int receivingPort) throws SocketException;
 
