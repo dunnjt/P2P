@@ -155,7 +155,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
         jLabel3.setText("Directory Server IP:");
 
-        serverIPTextBox.setText("127.0.0.1");
+        serverIPTextBox.setText("192.168.1.111");
 
         jLabel4.setText("Search:");
 
@@ -282,9 +282,6 @@ public class ClientMainPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_informButtonMouseClicked
 
     private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
-//        p2pFiles = new ArrayList<>();
-//        p2pFiles.add(new P2PFile("songname", 123456789, "127.0.0.1", "johnsPC"));
-//        updateJTable();
         EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.parseInt(sourcePortTextBox.getText()), ip);
         send(extPacketSet);
     }//GEN-LAST:event_disconnectButtonMouseClicked

@@ -109,7 +109,7 @@ public abstract class PacketSet {
         String convert = data.replaceAll("[\n]", " ");
         String[] listString = convert.split(" ");
         for (int i = 0; i < listString.length - 3; i = i + 4) {
-            list.add(new P2PFile(listString[i], Long.parseLong(listString[i + 1].trim()), listString[i + 2], listString[i + 3]));
+            list.add(new P2PFile(listString[i], Long.parseLong(listString[i + 1].trim()), listString[i + 2], listString[i + 3].replace("\r", "")));
         }
         return list;
     }

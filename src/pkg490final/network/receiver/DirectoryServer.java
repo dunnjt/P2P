@@ -153,7 +153,7 @@ public class DirectoryServer {
     public synchronized void deleteFromMaster(String client) {
         for (int i = 0; i < masterP2PList.size(); i++) {
             if (masterP2PList.get(i).getHostName().equals(client)) {
-                masterP2PList.remove(i);
+                masterP2PList.remove(masterP2PList.get(i));
             }
         }
     }

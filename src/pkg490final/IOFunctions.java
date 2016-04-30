@@ -33,7 +33,7 @@ public class IOFunctions {
         File[] files = folder.listFiles();
 
         for (File file : files) {
-            tempFile = new P2PFile(file.getName(), file.length(), PacketUtilities.getPublicIP(), getLocalHostName());
+            tempFile = new P2PFile(file.getName(), file.length(), PacketUtilities.getLocalIP(), getLocalHostName());
             tempFile.convertSpaces();
             localFiles.add(tempFile);
         }
@@ -55,7 +55,7 @@ public class IOFunctions {
         File[] files = folder.listFiles();
 
         for (File file : files) {
-            tempFile = new P2PFile(file.getName(), file.length(), PacketUtilities.getPublicIP(), getLocalHostName());
+            tempFile = new P2PFile(file.getName(), file.length(), PacketUtilities.getLocalIP(), getLocalHostName());
             tempFile.convertSpaces();
             localFiles.add(tempFile);
         }
