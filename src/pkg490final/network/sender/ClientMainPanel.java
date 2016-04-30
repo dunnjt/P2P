@@ -138,13 +138,13 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
         folderTextBox.setText("d:\\p2p");
 
-        sourcePortTextBox.setText("33000");
+        sourcePortTextBox.setText("2014");
 
         jLabel1.setText("Source Port:");
 
         jLabel2.setText("Destination Port:");
 
-        destPortTextBox.setText("2014");
+        destPortTextBox.setText("4014");
         destPortTextBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 destPortTextBoxActionPerformed(evt);
@@ -210,12 +210,13 @@ public class ClientMainPanel extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(responseLabel)
-                        .addGap(7, 7, 7)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(responseLabel)
+                                .addGap(7, 7, 7)
+                                .addComponent(jLabel4))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(serverIPTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -251,7 +252,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
             ArrayList<P2PFile> files = new ArrayList<>();
             files.add(p2pFiles.get(i));
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
-            send(downPacketSet, 33000, p2pFiles.get(i).getIp());
+            send(downPacketSet, 3014, p2pFiles.get(i).getIp());
 
         }
     }//GEN-LAST:event_downloadButtonMouseClicked
@@ -316,7 +317,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        receive(ReqPacketSet, 2014, ip);
+        receive(ReqPacketSet, 4014, ip);
     }
 
     private void receive(RequestPacketSet ReqPacketSet, int destPort, String destIP) {

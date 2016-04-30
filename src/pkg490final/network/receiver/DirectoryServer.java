@@ -61,7 +61,7 @@ public class DirectoryServer{
      */
     public static DirectoryServer getInstance() {
         if(instance == null) {
-            instance = new DirectoryServer(2014);
+            instance = new DirectoryServer(4014);
         }
         return instance;
     }

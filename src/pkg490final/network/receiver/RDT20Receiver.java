@@ -78,7 +78,6 @@ public class RDT20Receiver extends Thread {
 //            System.out.println(allPackets.data);
 //        }
 //    }
-
     /**
      * starts the thread to begin listening for packets. Once a packet is
      * received the requestLine is saved and this class is passed to the current
@@ -107,30 +106,29 @@ public class RDT20Receiver extends Thread {
 //            stopListening();
 //        }
 //    }
-    
     public void run() {
         System.out.println("Receiver " + this.getName() + " waiting for packet");
     }
-    
-    public void incoming(Packet packetData) throws Exception{
+
+    public void incoming(Packet packetData) throws Exception {
         reqLine = (RequestLine) packetData.getLine();
         currentPacket = packetData;
-        state.action(this);    
+        state.action(this);
     }
-    
+
     public void deliverData(Packet packet) {
         packetsReceived++;
         packets.add(packet);
         if (packet.isLastPacket()) {
             //System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
             PacketSet allPackets = PacketSet.createPacketSet(packets);
-            
+
             DirectoryServer server = DirectoryServer.getInstance();
 
             server.writeToMaster(allPackets.convertToP2PFiles());
             //server.deleteFromMaster(this.getName());
             //server.findPeer(null);
-            
+
             server.killThread(this.getName());
         }
     }

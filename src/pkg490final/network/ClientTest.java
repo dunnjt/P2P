@@ -28,7 +28,6 @@ public class ClientTest {
             //if using public address, must forward port 33000 to local ip on your router to receive acks from server.
             RDT30Sender sender = new RDT30Sender();
             sender.startSender(target, 33000, 2014);
-            sender.hashCode()
 
             //read local files from a directory and create a inform and update packet set.
             PacketSet p = new LISTResponsePacketSet(IOFunctions.readLocalFiles());
