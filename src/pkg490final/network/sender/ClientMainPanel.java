@@ -340,11 +340,12 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
             responsePacketSet = (ResponsePacketSet) rcvr.getPacketSet();
             rcvr.stopListening();
+            System.out.println("------------------------------------------RESPONSE METHOD RCVD = " + responsePacketSet.getResponseMethod());
+
         } catch (SocketException ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         RequestLine reqLine = (RequestLine) ReqPacketSet.getLine();
-        System.out.println("------------------------------------------RESPONSE METHOD RCVD = " + responsePacketSet.getResponseMethod());
         clientResponse(reqLine, responsePacketSet);
     }
 

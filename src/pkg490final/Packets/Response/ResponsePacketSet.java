@@ -9,8 +9,8 @@ import pkg490final.Packets.Line;
 import pkg490final.Packets.PacketSet;
 
 /**
- * Parent class for all Response Packet Sets(LIST, OK, ACK, ERROR, SEND) 
- * 
+ * Parent class for all Response Packet Sets(LIST, OK, ACK, ERROR, SEND)
+ *
  * @author john
  */
 public class ResponsePacketSet extends PacketSet {
@@ -18,12 +18,18 @@ public class ResponsePacketSet extends PacketSet {
     public ResponsePacketSet(Line line, String data) {
         super(line, data);
     }
-    public ResponsePacketSet(){
-        
+
+    public ResponsePacketSet() {
+
     }
-    
-    public ResponseMethod getResponseMethod(){
-        ResponseLine resLine = (ResponseLine)getLine();
-        return resLine.getMethod();
+
+    public ResponseMethod getResponseMethod() {
+        try {
+            ResponseLine resLine = (ResponseLine) getLine();
+            return resLine.getMethod();
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 }

@@ -62,12 +62,13 @@ public abstract class PacketSet {
     public void createPackets() {
         packets = new ArrayList();
         int counter = 0;
-        int bodyLength = 128 - getLine().size();
+        int bodyLength = 127 - getLine().size();
+        int i = getPacketBody().length();
         if (getPacketBody().length() == 0) {
             packets.add(new Packet(line, "\u0004", true));
         } else {
             while (counter < getPacketBody().length()) {
-                if (counter + bodyLength > getPacketBody().length() + 1) {
+                if (counter + bodyLength > getPacketBody().length()) {
                     packets.add(new Packet(line, getPacketBody().substring(counter), true));
                 } else {
                     packets.add(new Packet(line, getPacketBody().substring(counter, counter + bodyLength), false));
