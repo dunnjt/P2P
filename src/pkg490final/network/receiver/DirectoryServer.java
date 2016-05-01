@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pkg490final.P2PFile;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.RequestLine;
@@ -92,6 +94,7 @@ public class DirectoryServer {
                 // String temp = new String(packetData);
                 byte[] packetData = Arrays.copyOf(inboundPacket.getData(), inboundPacket.getLength());
                 String temp = new String(packetData);
+                System.out.println(temp);
                 Packet reconstructedPacket = new Packet(temp);
 
                 RequestLine reqLine = (RequestLine) reconstructedPacket.getLine();
@@ -107,9 +110,11 @@ public class DirectoryServer {
                 }
                 receiver.incoming(reconstructedPacket);
             }
-        } catch (Exception e) {
+        } catch (SocketException e) {
             System.out.println("CAUGHT EXCEPTION ON DIRECTORY SERVER");
             stopListening();
+        } catch (IOException ex) {
+            Logger.getLogger(DirectoryServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

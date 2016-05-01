@@ -4,16 +4,23 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/DirectoryServer.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/IOFunctions.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/Packets/PacketSet.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/Packets/Packet.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/PacketUtilities.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/network/Main.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/network/sender/SenderSendState0.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/network/sender/ClientMainPanel.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/ReceiverState.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/Packets/PacketSetFactory.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/TCP/P2PClient.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/Packets/Request/RequestMethod.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/network/Client.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/Packets/Request/QRYRequestPacketSet.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/network/sender/RDT30Sender.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/RDT20Receiver.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/network/ClientTest.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/ReceiverState0.java</file>
-            <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/ClientReceiver.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/P2PFile.java</file>
+            <file>file:/D:/GitHub/P2P/src/pkg490final/TCP/P2PHost.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/Packets/Response/ResponseLine.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/network/receiver/ServerStart.java</file>
             <file>file:/D:/GitHub/P2P/src/pkg490final/Packets/Request/EXTRequestPacketSet.java</file>

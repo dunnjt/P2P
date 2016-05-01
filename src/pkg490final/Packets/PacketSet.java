@@ -68,9 +68,9 @@ public abstract class PacketSet {
         } else {
             while (counter < getPacketBody().length()) {
                 if (counter + bodyLength > getPacketBody().length() + 1) {
-                    packets.add(new Packet(line, getPacketBody().substring(counter), false));
+                    packets.add(new Packet(line, getPacketBody().substring(counter), true));
                 } else {
-                    packets.add(new Packet(line, getPacketBody().substring(counter, counter + bodyLength), true));
+                    packets.add(new Packet(line, getPacketBody().substring(counter, counter + bodyLength), false));
                 }
                 counter += bodyLength;
             }

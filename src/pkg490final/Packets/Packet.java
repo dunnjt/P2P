@@ -38,6 +38,7 @@ public class Packet {
      *
      * @param receivedPacket: String of received packet.
      */
+    
     public Packet(String receivedPacket) {
         String[] a = receivedPacket.split("\r\n\r\n");
         seqNumber = Character.getNumericValue(a[0].charAt(a[0].length() - 1));
@@ -87,10 +88,10 @@ public class Packet {
 
     @Override
     public String toString() {
-        if (lastPacket) {
+        if (!lastPacket) {
             return line.toString() + " " + seqNumber + "\r\n\r\n" + packetBody;
         } else {
-            return line.toString() + " " + seqNumber + "\r\n\r\n" + packetBody + "\u0004";
+            return line.toString() + " " + seqNumber + "\r\n\r\n" + packetBody + '\u0004';
         }
     }
 

@@ -13,12 +13,7 @@ import pkg490final.Packets.PacketSet;
 import pkg490final.Packets.Request.RequestMethod;
 import pkg490final.Packets.Request.RequestPacketSet;
 import pkg490final.Packets.RequestLine;
-import pkg490final.Packets.Response.ERRORResponsePacketSet;
-import pkg490final.Packets.Response.LISTResponsePacketSet;
-import pkg490final.Packets.Response.OKResponsePacketSet;
-import pkg490final.Packets.Response.ResponseLine;
-import pkg490final.Packets.Response.ResponseMethod;
-import pkg490final.Packets.Response.ResponsePacketSet;
+import pkg490final.Packets.Response.*;
 import pkg490final.network.sender.RDT30Sender;
 
 /**
@@ -72,7 +67,7 @@ public class RDT20Receiver extends Thread {
         System.out.println("Receiver " + this.getName() + " waiting for packet");
     }
 
-    public void incoming(Packet packetData) throws Exception {
+    public void incoming(Packet packetData) throws IOException {
         reqLine = (RequestLine) packetData.getLine();
         currentPacket = packetData;
         state.action(this);
@@ -108,7 +103,8 @@ public class RDT20Receiver extends Thread {
             ResPS = new OKResponsePacketSet(ackPort);
         } else if (reqPS.getRequestMethod() == RequestMethod.QRY) {
             ResPS = new LISTResponsePacketSet(server.qryMasterList(reqPS.getPacketBody()));
-
+        } else if (reqPS.getRequestMethod() == RequestMethod.EXT) {
+            ResPS = new OKResponsePacketSet();
         }
         try {
             sender.initializeSend(ResPS.getPackets());
@@ -118,10 +114,15 @@ public class RDT20Receiver extends Thread {
             Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
         }
         sender.stopSender();
-        try {
-            server.restartReceiver(this.getName(), receivingPort);
-        } catch (SocketException ex) {
-            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+        if (reqPS.getRequestMethod() == RequestMethod.EXT) {
+            server.deleteFromMaster(this.getName());
+            server.killThread(this.getName());
+        } else {
+            try {
+                server.restartReceiver(this.getName(), receivingPort);
+            } catch (SocketException ex) {
+                Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }
@@ -152,7 +153,6 @@ public class RDT20Receiver extends Thread {
     public void setState(ReceiverState state) {
         this.state = state;
     }
-   
 
     /**
      * simple method to append @@@ in front of messages by the receiver to
