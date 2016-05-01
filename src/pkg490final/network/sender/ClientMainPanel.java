@@ -265,8 +265,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
             files.add(p2pFiles.get(i));
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
-
         }
+//        
+//        ArrayList<P2PFile> files = new ArrayList<>();
+//            P2PFile test = new P2PFile("test", 1234, "test", "test");
+//            files.add(test);
+//            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
+//            send(downPacketSet, 3014, "127.0.0.1");
+
     }//GEN-LAST:event_downloadButtonMouseClicked
 
     private void queryButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_queryButtonMouseClicked
@@ -279,6 +285,8 @@ public class ClientMainPanel extends javax.swing.JPanel {
         ArrayList<P2PFile> localFiles = IOFunctions.readLocalFiles(folderTextBox.getText());
         INFRequestPacketSet infPacketSet = new INFRequestPacketSet(localFiles, Integer.parseInt(sourcePortTextBox.getText()), ip);
         send(infPacketSet);
+
+        peerReceiver();
     }//GEN-LAST:event_informButtonMouseClicked
 
     private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
@@ -335,7 +343,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
         try {
             ClientReceiver rcvr = new ClientReceiver(ReqPacketSet.responseExpected().name(), Integer.parseInt(sourcePortTextBox.getText()), destPort, destIP);
-            rcvr.run();
+            rcvr.start();
             System.out.println("CLIENT RECEIVER STARTED, EXPECTED RESPONSE: " + ReqPacketSet.responseExpected().name());
 
             responsePacketSet = (ResponsePacketSet) rcvr.getPacketSet();
@@ -370,6 +378,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
             responseLabel.setForeground(Color.red);
             responseLabel.setText("Error Occured, please try again");
         }
+    }
+
+    private void peerReceiver() {
+//        try {
+//            ClientReceiver rcvr = new ClientReceiver(this.getName(), 3014);
+//        } catch (SocketException se) {
+//
+//        }
     }
 
     public static void main(String[] args) {
