@@ -359,7 +359,8 @@ public class ClientMainPanel extends javax.swing.JPanel {
     }
 
     /**
-     * receiver is listening for that
+     * takes in a request packet set with a destination port and destination ip
+     * This method listens for a response packet and passes it onto the client response in order to 
      *
      * @param ReqPacketSet
      * @param destPort
