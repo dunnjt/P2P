@@ -29,7 +29,7 @@ public class ClientReceiver extends RDT20Receiver {
         super(name, receivingPort);
         this.sendingPort = sendingPort;
         this.serverIP = serverIP;
-        System.out.println("serverIP: " + serverIP +"\nreceiving Port: " + receivingPort + "\n sending port: " + sendingPort);
+        System.out.println("serverIP: " + serverIP + "\nreceiving Port: " + receivingPort + "\n sending port: " + sendingPort);
     }
 
     /**
@@ -71,9 +71,12 @@ public class ClientReceiver extends RDT20Receiver {
                 byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
                 String temp = new String(packetData);
                 Packet reconstructedPacket = new Packet(temp);
-                reqLine = (RequestLine) reconstructedPacket.getLine();
+                try {
+                    reqLine = (RequestLine) reconstructedPacket.getLine();
+                } catch (Exception e) {
+
+                }
                 currentPacket = reconstructedPacket;
-                
 
                 state.action(this);
             }
