@@ -279,7 +279,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
             //this may need to go below after the OK is received from the other peer
-            P2PClient tcpClient = new P2PClient("peer1", 7016, p2pFiles.get(i).getName());
+            P2PClient tcpClient = new P2PClient("peer1", 3014, p2pFiles.get(i).getName());
             tcpClient.start();
         }
 
@@ -336,7 +336,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        receive(packetSet, destPort, destIP);
+//        receive(packetSet, destPort, destIP);
     }
 
     /**
