@@ -65,7 +65,7 @@ public class P2PHost extends Thread {
     public void run() {
 
         try {
-
+            fileName = fileName.replace("|", " ");
             Path path = Paths.get(location + fileName);
             System.out.println("Path of file requested " + path);
             System.out.println(path);
