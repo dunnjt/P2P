@@ -37,6 +37,7 @@ public class P2PHost extends Thread {
         super(name);
         this.fileName = fileName;
         try {
+            System.out.println("Host started");
             InetAddress address = InetAddress.getByName(localAddr);
             socket = new Socket("peer", port, address, localPort);
         } catch (Exception e) {
@@ -52,7 +53,7 @@ public class P2PHost extends Thread {
         try {
             socket = new Socket("localhost", port);
         } catch (Exception e) {
-            System.out.println("");
+            System.out.println("Error");
         }
     }
 
@@ -91,8 +92,9 @@ public class P2PHost extends Thread {
         location = fileLocation;
     }
 
-//    public static void main (String[] args) {
-//        P2PHost host = new P2PHost("test", 33000, "test1.txt");
-//        host.run();
-//    }
+    public static void main (String[] args) {
+        P2PHost host = new P2PHost("test", 7014, "test1.txt");
+        host.setFileLocation("/Users/johndunn/Desktop/p2p/");
+        host.run();
+    }
 }

@@ -109,8 +109,9 @@ public class P2PClient extends Thread {
         location = fileLocation;
     }
 
-//    public static void main (String[] args) {
-//        P2PClient client = new P2PClient("test", 7014, "test1.txt");
-//        client.run();
-//        }
+    public static void main (String[] args) {
+        P2PClient client = new P2PClient("test", 7014, "test1.txt");
+        client.setFileLocation("/Users/johndunn/Desktop/TCPTest/");
+        client.run();
+        }
 }
