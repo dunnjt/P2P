@@ -96,12 +96,18 @@ public class P2PClient extends Thread {
                 }
 
                 //for testing
-                String s = new String(message);
-                System.out.println("Text Decryted : " + s);
+                System.out.println("Download " + fileName + " successfully");
             }
 
         } catch (Exception e) {
 
+        }
+        finally {
+            try {
+                socket.close();
+            } catch (IOException se) {
+                
+            }
         }
     }
 

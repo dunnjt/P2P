@@ -73,7 +73,7 @@ public class ClientReceiverDown extends ClientReceiver {
         ArrayList<P2PFile> files = packets.convertToP2PFiles();
 
         //port 7014 temp port assignment for all host side connections
-        P2PHost host = new P2PHost(this.getName(), 3014, rps.getRequestLine().getIpString(), files.get(0).getName());
+        P2PHost host = new P2PHost(this.getName(), 7014, rps.getRequestLine().getIpString(), files.get(0).getName());
         host.start();
     }
 
@@ -81,7 +81,7 @@ public class ClientReceiverDown extends ClientReceiver {
     public void responseProcedure(ArrayList<P2PFile> packets) {
         ArrayList<P2PFile> files = packets;
 
-        P2PHost host = new P2PHost(this.getName(), 3014, packets.get(0).getIp(), files.get(0).getName());
+        P2PHost host = new P2PHost(this.getName(), 7014, packets.get(0).getIp(), files.get(0).getName());
         host.start();
     }
 
