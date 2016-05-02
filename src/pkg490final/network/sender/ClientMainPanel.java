@@ -409,8 +409,8 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
     private void peerReceiver() {
         try {          
-            ClientReceiverDown rcvr = new ClientReceiverDown("peer2", 3014, 3014, "127.0.0.1");
-            rcvr.run();
+            ClientReceiverDown rcvr = new ClientReceiverDown("peer2", 3014);
+            rcvr.start();
         } catch (SocketException se) {
 
         }
