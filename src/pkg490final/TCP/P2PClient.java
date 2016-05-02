@@ -5,30 +5,38 @@
  */
 package pkg490final.TCP;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import pkg490final.P2PFile;
 
 /**
  * P2PClient is the Peer on P2P network that is receiving the file. After UDP communication with P2PHst, P2PClient accepts socket connection from host,
  * and receives message as a byte array. Byte array is written to File Output Stream. 
+ * 
+ * Must be run first
+ * 
+ * 
  * @author johndunn
  */
 public class P2PClient extends Thread {
 
     private int serverPort;
     private ServerSocket socket;
+    private ArrayList<P2PFile> fileNames;
+    private String fileName;
+    private static String location;
 
-    public P2PClient(String name, int serverPort) {
+    public P2PClient(String name, int serverPort, ArrayList<P2PFile> fileNames) {
         super(name);
         this.serverPort = serverPort;
+        this.fileNames = fileNames;
+    }
+    
+    public P2PClient(String name, int serverPort, String fileName) {
+        super(name);
+        this.serverPort = serverPort;
+        this.fileName = fileName;
     }
 
     /**
@@ -44,20 +52,22 @@ public class P2PClient extends Thread {
 
         try {
             while (true) {
+                    
                 Socket connectionSocket = socket.accept();
-                DataInputStream inFromClient = new DataInputStream(connectionSocket.getInputStream());
-                DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+                DataInputStream inFromHost = new DataInputStream(connectionSocket.getInputStream());
+                //DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 
-                int length = inFromClient.readInt();
+                int length = inFromHost.readInt();
                 byte[] message = new byte[length];
 
                 if (length > 0) {
 
-                    inFromClient.readFully(message, 0, message.length); // read the message
+                    inFromHost.readFully(message, 0, message.length); // read the message
                 }
 
                 //output stream will have to be customized to our specific file paths.
-                FileOutputStream fos = new FileOutputStream("/Users/johndunn/Documents/CS490/P2P/files");
+                //FileOutputStream fos = new FileOutputStream("/Users/johndunn/Documents/CS490/P2P/files/" + fileNames.get(i).getName());
+                FileOutputStream fos = new FileOutputStream(location + fileName);
                 try {
                     fos.write(message);
                 } catch (IOException e) {
@@ -67,11 +77,21 @@ public class P2PClient extends Thread {
                 }
 
                 //for testing
-                //String s = new String(message);
-                //System.out.println("Text Decryted : " + s);
-            }
+                String s = new String(message);
+                System.out.println("Text Decryted : " + s);
+                }
+
         } catch (Exception e) {
 
         }
     }
+    
+    public static void setFileLocation (String fileLocation) {
+        location = fileLocation;
+    }
+    
+//    public static void main (String[] args) {
+//        P2PClient client = new P2PClient("test", 7014, "test1.txt");
+//        client.run();
+//        }
 }

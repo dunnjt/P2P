@@ -2,8 +2,14 @@ package pkg490final.network.sender;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -11,11 +17,15 @@ import javax.swing.table.DefaultTableModel;
 import pkg490final.IOFunctions;
 import pkg490final.P2PFile;
 import pkg490final.PacketUtilities;
+import pkg490final.Packets.Packet;
 import pkg490final.Packets.Request.*;
 import pkg490final.Packets.RequestLine;
 import pkg490final.Packets.Response.ResponseMethod;
 import pkg490final.Packets.Response.ResponsePacketSet;
+import pkg490final.TCP.P2PClient;
+import pkg490final.TCP.P2PHost;
 import pkg490final.network.receiver.ClientReceiver;
+import pkg490final.network.receiver.ClientReceiverDown;
 
 /**
  *
@@ -26,6 +36,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
     ArrayList<P2PFile> p2pFiles;
     String ip;
     int ackPort;
+    private static Map<String, Thread> threads = null;
 
     /**
      * Creates new form ClientMainPanel
@@ -33,6 +44,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
     public ClientMainPanel() {
 
         ip = PacketUtilities.getLocalIP();
+        threads = new HashMap<>();
 //        ip = PacketUtilities.getPublicIP();
         initComponents();
     }
@@ -179,52 +191,54 @@ public class ClientMainPanel extends javax.swing.JPanel {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 763, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(informButton, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(queryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(downloadButton)
+                            .addComponent(disconnectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(informButton, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(queryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(downloadButton)
-                                    .addComponent(disconnectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(folderTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(198, 198, 198)
-                                .addComponent(responseLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(destPortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(destPortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(6, 6, 6)
+                                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addGap(39, 39, 39)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(sourcePortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(6, 6, 6)
+                                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(6, 6, 6)
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                .addGap(34, 34, 34)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(sourcePortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 21, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(serverIPTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(serverIPTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(responseLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 16, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(3, 3, 3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(responseLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(71, 71, 71)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(31, 31, 31)
+                        .addComponent(serverIPTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -234,17 +248,16 @@ public class ClientMainPanel extends javax.swing.JPanel {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(downloadButton)
-                                .addComponent(jLabel3))
+                            .addComponent(downloadButton)
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel4)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel3))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(queryButton)
-                            .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(serverIPTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(queryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
@@ -253,7 +266,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(disconnectButton)
                             .addComponent(folderTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(24, Short.MAX_VALUE))))
+                        .addContainerGap(16, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -265,13 +278,19 @@ public class ClientMainPanel extends javax.swing.JPanel {
             files.add(p2pFiles.get(i));
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
+            //this may need to go below after the OK is received from the other peer
+            P2PClient tcpClient = new P2PClient("peer1", 7016, p2pFiles.get(i).getName());
+            tcpClient.start();
         }
+
+        
 //        
 //        ArrayList<P2PFile> files = new ArrayList<>();
-//            P2PFile test = new P2PFile("test", 1234, "test", "test");
+//            P2PFile test = new P2PFile("test1.txt", 1234, "test", "test");
 //            files.add(test);
-//            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
-//            send(downPacketSet, 3014, "127.0.0.1");
+//        setFileLocationTCP();
+//        P2PClient tcpClient = new P2PClient("peer1", 7016, test.getName());
+//        tcpClient.start();
 
     }//GEN-LAST:event_downloadButtonMouseClicked
 
@@ -287,6 +306,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         send(infPacketSet);
 
         peerReceiver();
+        setFileLocationTCP();
     }//GEN-LAST:event_informButtonMouseClicked
 
     private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
@@ -303,7 +323,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
      *
      * @param packetSet packetSet to be sent (only down request packet passed
      * here)
-     * @param destPort port to send packet to
+     * @param destPort port to send packet to, hard-coded to 3014
      * @param destIP IP to send packet to (client)
      */
     private void send(RequestPacketSet packetSet, int destPort, String destIP) {
@@ -338,12 +358,19 @@ public class ClientMainPanel extends javax.swing.JPanel {
         receive(ReqPacketSet, 5014, serverIPTextBox.getText());
     }
 
+    /**
+     * receiver is listening for that
+     *
+     * @param ReqPacketSet
+     * @param destPort
+     * @param destIP
+     */
     private void receive(RequestPacketSet ReqPacketSet, int destPort, String destIP) {
         ResponsePacketSet responsePacketSet = null;
 
         try {
             ClientReceiver rcvr = new ClientReceiver(ReqPacketSet.responseExpected().name(), Integer.parseInt(sourcePortTextBox.getText()), destPort, destIP);
-            rcvr.start();
+            rcvr.run();
             System.out.println("CLIENT RECEIVER STARTED, EXPECTED RESPONSE: " + ReqPacketSet.responseExpected().name());
 
             responsePacketSet = (ResponsePacketSet) rcvr.getPacketSet();
@@ -381,13 +408,53 @@ public class ClientMainPanel extends javax.swing.JPanel {
     }
 
     private void peerReceiver() {
-//        try {
-//            ClientReceiver rcvr = new ClientReceiver(this.getName(), 3014);
-//        } catch (SocketException se) {
-//
-//        }
+        try {          
+            ClientReceiverDown rcvr = new ClientReceiverDown("peer2", 3014, 3014, "127.0.0.1");
+            rcvr.run();
+        } catch (SocketException se) {
+
+        }
+
+    }
+    
+    public void setFileLocationTCP() {
+        P2PClient.setFileLocation(folderTextBox.getText());
+        P2PHost.setFileLocation(folderTextBox.getText());
     }
 
+//    private void peerReceiver() {
+//
+//        byte[] receive = new byte[128];
+//        try {
+//            DatagramSocket socket = new DatagramSocket(6014);
+//            while (true) {
+//                ClientReceiverDown receiver;
+//                DatagramPacket inboundPacket = new DatagramPacket(receive, receive.length);
+//                socket.receive(inboundPacket);
+//
+//                byte[] packetData = Arrays.copyOf(inboundPacket.getData(), inboundPacket.getLength());
+//                String temp = new String(packetData);
+//                System.out.println(temp);
+//                Packet reconstructedPacket = new Packet(temp);
+//
+//                RequestLine reqLine = (RequestLine) reconstructedPacket.getLine();
+//
+//                if (runningThread(reqLine.getHostName())) {
+//                    receiver = (ClientReceiverDown) threads.get(reqLine.getHostName());
+//                } else {
+//                    receiver = new ClientReceiverDown(reqLine.getHostName(), reqLine.getSourcePort());
+//                    threads.put(reqLine.getHostName(), receiver);
+//                    //threadNames.add(reqLine.getHostName());
+//                    receiver.start();
+//                }
+//                receiver.incoming(reconstructedPacket);
+//            }
+//        } catch (SocketException e) {
+//            System.out.println("CAUGHT EXCEPTION ON ClIENT LISTENER");
+//        } catch (IOException ex) {
+//            Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
     public static void main(String[] args) {
         JFrame frame = new JFrame("Peer-to-Peer File Sharing Application");
         frame.add(new ClientMainPanel(), BorderLayout.CENTER);

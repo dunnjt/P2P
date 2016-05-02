@@ -12,21 +12,24 @@ package pkg490final.TCP;
 public class Main {
 
   public static void main(String[] args) {
-    P2PHost serverThread = null;
-    P2PClient clientThread = null;
+    P2PClient client = null;
+    P2PHost host = null;
     try {
       // Start server
-      serverThread = new P2PHost("Server", 49000);
-      serverThread.start();
+      client = new P2PClient("Server", 33000, "test2.txt");
+      client.start();
+      client.sleep(1000);
 
       // Create client
       byte[] targetAdddress = {127, 0, 0, 1};
-      P2PClient client1 = new P2PClient("CLIENT1", 49000);
+      host = new P2PHost("CLIENT1", 33000, "test2.txt");
       //P2PClient client2 = new TCPClient("CLIENT2", 49000);
-      client1.start();
+      host.start();
+      host.sleep(1000);
       //client2.start();
     } catch (Exception e) {
       e.printStackTrace();
+                
     }
   }
 }
