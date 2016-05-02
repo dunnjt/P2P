@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.PacketSet;
+import pkg490final.Packets.RequestLine;
 import pkg490final.Packets.Response.ResponseLine;
 import pkg490final.Packets.Response.ResponseMethod;
 
@@ -70,8 +71,9 @@ public class ClientReceiver extends RDT20Receiver {
                 byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
                 String temp = new String(packetData);
                 Packet reconstructedPacket = new Packet(temp);
-//                reqLine = (RequestLine) reconstructedPacket.getLine();
+                reqLine = (RequestLine) reconstructedPacket.getLine();
                 currentPacket = reconstructedPacket;
+                
 
                 state.action(this);
             }

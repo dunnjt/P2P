@@ -156,10 +156,13 @@ public class DirectoryServer {
      * @param client that is removing themselves from peer network.
      */
     public synchronized void deleteFromMaster(String client) {
-        for (int i = 0; i < masterP2PList.size(); i++) {
+        for (int i = 0; i < masterP2PList.size(); i=i) {
             if (masterP2PList.get(i).getHostName().equals(client)) {
                 masterP2PList.remove(masterP2PList.get(i));
+            }else{
+                i++;
             }
+            
         }
     }
 

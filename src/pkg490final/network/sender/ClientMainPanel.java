@@ -331,7 +331,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         RDT30Sender client = new RDT30Sender();
 
         try {
-            client.startSender(destIP, destPort, Integer.parseInt(destPortTextBox.getText()));
+            client.startSender(destIP, destPort, Integer.parseInt(sourcePortTextBox.getText()));
             client.initializeSend(packetSet.getPackets());
         } catch (Exception ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
