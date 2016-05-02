@@ -6,6 +6,7 @@
 package pkg490final.TCP;
 
 import java.io.DataOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,25 +24,22 @@ import pkg490final.P2PFile;
  */
 public class P2PHost extends Thread {
 
-    private int port;
     private Socket socket;
     private ArrayList<P2PFile> fileNames;
     private String fileName;
     private static String location;
 
-    public P2PHost(String name, int port, ArrayList<P2PFile> fileNames) {
+    public P2PHost(String name, int port, InetAddress localAddr, int localPort, String fileName) {
         super(name);
-        this.port = port;
-        this.fileNames = fileNames;
+        this.fileName = fileName;
         try {
-            socket = new Socket("localhost", port);
+            socket = new Socket("localhost", port, localAddr, localPort);
         } catch (Exception e) {
         }
     }
     
     public P2PHost(String name, int port, String fileName) {
         super(name);
-        this.port = port;
         this.fileName = fileName;
         try {
             socket = new Socket("localhost", port);

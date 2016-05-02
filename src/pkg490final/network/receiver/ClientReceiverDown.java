@@ -84,4 +84,25 @@ public class ClientReceiverDown extends ClientReceiver {
         P2PHost host = new P2PHost(this.getName(), 7014, files.get(0).getName());
         host.start();          
     }
+    
+    
+        /**
+     * Send ACK response packet to the client to respond that the last packet
+     * has been received. The ACK number depends on what the receiver was
+     * expecting and what it actually received.
+     *
+     * @param seqNumber the sequence number of the ACK to be sent.
+     */
+    @Override
+    public void sendACK(int seqNumber) throws UnknownHostException, IOException {
+
+        receiverPrint("sending ACK: " + seqNumber);
+        Packet ack = new Packet(new ResponseLine(ResponseMethod.ACK), " ", true);
+        ack.setSeqNumber(seqNumber);
+
+        //sends ACK back to ip and port specified in request line.
+        DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), reqLine.getIp(), reqLine.getSourcePort());
+
+        sendingSocket.send(ackPacket);
+    }
 }
