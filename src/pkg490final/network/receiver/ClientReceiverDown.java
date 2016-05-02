@@ -25,7 +25,6 @@ import pkg490final.TCP.P2PHost;
  *
  * @author johndunn
  */
-
 public class ClientReceiverDown extends ClientReceiver {
 
     private PacketSet packetSet;
@@ -48,7 +47,7 @@ public class ClientReceiverDown extends ClientReceiver {
         state = new ReceiverState0();
         packetsReceived = 0;
     }
-    
+
     public ClientReceiverDown(String name, int receivingPort, int sendingPort, String serverIP) throws SocketException {
 
         super(name, receivingPort);
@@ -69,25 +68,24 @@ public class ClientReceiverDown extends ClientReceiver {
         }
     }
 
-   public void responseProcedure(PacketSet packets) {
-       RequestPacketSet rps = (RequestPacketSet) packets;
-       ArrayList<P2PFile> files = packets.convertToP2PFiles();
-       
-       //port 7014 temp port assignment for all host side connections
-        P2PHost host = new P2PHost(this.getName(), 3014, rps.getRequestLine().getIpString(), 3014, files.get(0).getName());
-        host.start();          
-   }
-   
+    public void responseProcedure(PacketSet packets) {
+        RequestPacketSet rps = (RequestPacketSet) packets;
+        ArrayList<P2PFile> files = packets.convertToP2PFiles();
+
+        //port 7014 temp port assignment for all host side connections
+        P2PHost host = new P2PHost(this.getName(), 3014, rps.getRequestLine().getIpString(), files.get(0).getName());
+        host.start();
+    }
+
     //for testing purposes
     public void responseProcedure(ArrayList<P2PFile> packets) {
         ArrayList<P2PFile> files = packets;
-       
-        P2PHost host = new P2PHost(this.getName(), 3014, packets.get(0).getIp(), 3014, files.get(0).getName());
-        host.start();          
+
+        P2PHost host = new P2PHost(this.getName(), 3014, packets.get(0).getIp(), files.get(0).getName());
+        host.start();
     }
-    
-    
-        /**
+
+    /**
      * Send ACK response packet to the client to respond that the last packet
      * has been received. The ACK number depends on what the receiver was
      * expecting and what it actually received.

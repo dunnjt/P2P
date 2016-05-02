@@ -15,13 +15,13 @@ public class Main {
 
     try {
       // Start server
-      P2PClient client = new P2PClient("Server", 7014, "test1.txt");
-      P2PClient.setFileLocation("/Users/johndunn/Desktop/TCPTest/");
-      client.start();
-      client.sleep(1000);
+//      P2PClient client = new P2PClient("Server", 7014, "01 - Wake Up.mp3");
+//      P2PClient.setFileLocation("c:/p2p/dl/");
+//      client.start();
+//      client.sleep(1000);
 
-      P2PHost host = new P2PHost("Host", 7014, "test1.txt");
-      P2PHost.setFileLocation("/Users/johndunn/Desktop/p2p/");
+      P2PHost host = new P2PHost("Host", 7014,"192.168.1.2", "01 - Wake Up.mp3");
+      P2PHost.setFileLocation("c:/p2p/");
       //host = new P2PHost("CLIENT1", 47000, "192.168.1.4", 33000, "test2.txt");
       //P2PClient client2 = new TCPClient("CLIENT2", 49000);
       host.start();

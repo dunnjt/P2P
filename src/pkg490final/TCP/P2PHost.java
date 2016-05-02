@@ -33,17 +33,19 @@ public class P2PHost extends Thread {
     private String fileName;
     private static String location;
 
-    public P2PHost(String name, int port, String localAddr, int localPort, String fileName) {
+    public P2PHost(String name, int port, String localAddr, String fileName) {
         super(name);
         this.fileName = fileName;
         try {
             System.out.println("Host started");
             InetAddress address = InetAddress.getByName(localAddr);
-            socket = new Socket("peer", port, address, localPort);
+            socket = new Socket(address, port);
+            System.out.println("created TCP socket on Host: port " + port + " Addr " + localAddr);
+
         } catch (Exception e) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, e);
 
-            System.out.println("Error creating TCP socket on Host: local " + localPort + "port " + port + " localAddr " + localAddr);
+            System.out.println("Error creating TCP socket on Host: port " + port + " Addr " + localAddr);
         }
     }
 
@@ -51,7 +53,7 @@ public class P2PHost extends Thread {
         super(name);
         this.fileName = fileName;
         try {
-            socket = new Socket("localhost", port);
+            socket = new Socket("192.168.1.2", port);
         } catch (Exception e) {
             System.out.println("Error");
         }
@@ -92,7 +94,7 @@ public class P2PHost extends Thread {
         location = fileLocation;
     }
 
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         P2PHost host = new P2PHost("test", 7014, "test1.txt");
         host.setFileLocation("/Users/johndunn/Desktop/p2p/");
         host.run();
