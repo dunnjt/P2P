@@ -29,12 +29,14 @@ public class P2PHost extends Thread {
     private String fileName;
     private static String location;
 
-    public P2PHost(String name, int port, InetAddress localAddr, int localPort, String fileName) {
+    public P2PHost(String name, int port, String localAddr, int localPort, String fileName) {
         super(name);
         this.fileName = fileName;
         try {
-            socket = new Socket("localhost", port, localAddr, localPort);
+            InetAddress address = InetAddress.getByName(localAddr);
+            socket = new Socket("peer", port, address, localPort);
         } catch (Exception e) {
+            System.out.println("Erroy creating TCP socket on Host");
         }
     }
     
@@ -44,6 +46,7 @@ public class P2PHost extends Thread {
         try {
             socket = new Socket("localhost", port);
         } catch (Exception e) {
+            System.out.println("");
         }
     }
 
@@ -53,8 +56,9 @@ public class P2PHost extends Thread {
     public void run() {
 
         try {
-
+            
             Path path = Paths.get(location + fileName);
+            System.out.println("Path of file requested " + path);
                 System.out.println(path);
                 byte[] data = Files.readAllBytes(path);
 
@@ -67,6 +71,7 @@ public class P2PHost extends Thread {
 
             
         } catch (Exception e) {
+            System.out.println("Exception caught on P2PHost run");
 
         } finally {
             try {
