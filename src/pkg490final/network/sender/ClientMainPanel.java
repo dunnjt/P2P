@@ -276,7 +276,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
             int i = fileTable.getSelectedRow();
             ArrayList<P2PFile> files = new ArrayList<>();
             files.add(p2pFiles.get(i));
-            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, Integer.parseInt(sourcePortTextBox.getText()), ip);
+            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, 7014, ip);
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
             //this may need to go below after the OK is received from the other peer
             P2PClient tcpClient = new P2PClient("peer1", 3014, p2pFiles.get(i).getName());

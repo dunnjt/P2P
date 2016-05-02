@@ -64,16 +64,17 @@ public class ClientReceiverDown extends ClientReceiver {
         if (packet.isLastPacket()) {
             //System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
             stopListening();
-            RequestPacketSet allPackets = (RequestPacketSet) PacketSet.createPacketSet(packets);
+            PacketSet allPackets = PacketSet.createPacketSet(packets);
             responseProcedure(allPackets);
         }
     }
 
    public void responseProcedure(PacketSet packets) {
+       RequestPacketSet rps = (RequestPacketSet) packets;
        ArrayList<P2PFile> files = packets.convertToP2PFiles();
        
        //port 7014 temp port assignment for all host side connections
-        P2PHost host = new P2PHost(this.getName(), 3014, files.get(0).getIp(), 3014, files.get(0).getName());
+        P2PHost host = new P2PHost(this.getName(), 3014, rps.getRequestLine().getIpString(), 3014, files.get(0).getName());
         host.start();          
    }
    
