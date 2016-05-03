@@ -36,7 +36,6 @@ public class ClientMainPanel extends javax.swing.JPanel {
     ArrayList<P2PFile> p2pFiles;
     String ip;
     int ackPort;
-    private static Map<String, Thread> threads = null;
     private int threadCounter = 0;
     P2PClient tcpClient = null;
 
@@ -46,8 +45,6 @@ public class ClientMainPanel extends javax.swing.JPanel {
     public ClientMainPanel() {
 
         ip = PacketUtilities.getLocalIP();
-        threads = new HashMap<>();
-//        ip = PacketUtilities.getPublicIP();
         initComponents();
     }
 
@@ -285,13 +282,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
             int i = fileTable.getSelectedRow();
             ArrayList<P2PFile> files = new ArrayList<>();
             files.add(p2pFiles.get(i));
-            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, 7014, ip);
-            send(downPacketSet, 3014, p2pFiles.get(i).getIp());
-            //this may need to go below after the OK is received from the other peer
             if (tcpClient != null) {
                 tcpClient.setFileName(p2pFiles.get(i).getName());
 
-            } else {
+            }
+            DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, 7014, ip);
+            send(downPacketSet, 3014, p2pFiles.get(i).getIp());
+            //this may need to go below after the OK is received from the other peer
+            if (tcpClient == null) {
                 tcpClient = new P2PClient(Integer.toString(threadCounter++), 7014, p2pFiles.get(i).getName());
                 tcpClient.setFileName(p2pFiles.get(i).getName());
                 tcpClient.startListening();
