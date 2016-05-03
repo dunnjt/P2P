@@ -21,19 +21,19 @@ public class SenderWaitState1 implements SenderState {
     @Override
     public void action(RDT30Sender wrapper) throws IOException, SocketException, InterruptedException {
         wrapper.senderPrint("Expecting ACK 1");
-        if (wrapper.waitForACK() == 1) {
-            wrapper.senderPrint("Received ACK 1");
+        boolean b = true;
+        while (b) {
+            if (wrapper.waitForACK() == 1) {
+                wrapper.senderPrint("Received ACK 1");
 
-            wrapper.cancelTimer();
-            wrapper.incrementPacketsSent();
-            wrapper.setState(new SenderSendState0());
-        } else {
-            wrapper.senderPrint("Received ACK 0");
-            wrapper.senderPrint("\nWRONG SEQUENCE NUMBER RECEIVED, RESENDING PACKET\n-------\n");
-
-            wrapper.cancelTimer();
-            wrapper.rdtSend();
-            wrapper.setState(new SenderWaitState1());
+                wrapper.cancelTimer();
+                wrapper.incrementPacketsSent();
+                wrapper.setState(new SenderSendState0());
+                b = false;
+            } else {
+                wrapper.senderPrint("Received ACK 0");
+                wrapper.senderPrint("\nWRONG SEQUENCE NUMBER RECEIVED, WAITING FOR CORRECT SEQ");
+            }
         }
     }
 }

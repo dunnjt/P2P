@@ -187,13 +187,13 @@ public class DirectoryServer {
         return masterP2PList;
     }
 
-    public synchronized ArrayList<P2PFile> qryMasterList(String qry) {
+    public synchronized ArrayList<P2PFile> qryMasterList(String qry, String ip) {
         if (qry.equals("\u0004")) {
             return masterP2PList;
         }
         ArrayList<P2PFile> returnList = new ArrayList<>();
         for (P2PFile p2pFile : masterP2PList) {
-            if (p2pFile.getName().toLowerCase().contains(qry.toLowerCase())) {
+            if (p2pFile.getName().toLowerCase().contains(qry.toLowerCase()) && !ip.equals(p2pFile.getIp())) {
                 returnList.add(p2pFile);
             }
         }
