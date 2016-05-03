@@ -14,6 +14,11 @@ import pkg490final.Packets.RequestLine;
 import pkg490final.Packets.Response.ResponseLine;
 import pkg490final.Packets.Response.ResponseMethod;
 
+/**
+ * Receiver on client for responses from server t.hat is spawned after a successful request
+ *
+ * @author john
+ */
 public class ClientReceiver extends RDT20Receiver {
 
     private PacketSet packetSet;

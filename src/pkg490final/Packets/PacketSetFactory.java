@@ -8,8 +8,23 @@ import pkg490final.Packets.Response.*;
 import pkg490final.Packets.Response.ResponseLine;
 import pkg490final.Packets.Response.ResponseMethod;
 
+/**
+ * Factory class to take in an arraylist of packets received on the user and
+ * return the correct packet set after building it. The packet set returned
+ * could be any class that extends request or response packets.
+ *
+ * @author john
+ */
 public class PacketSetFactory {
 
+    /**
+     *
+     * Takes in a array of packets and passes it to the correct method to create
+     * a request or response packet.
+     *
+     * @param packets
+     * @returns the correct packet set.
+     */
     public static PacketSet createPacketSet(ArrayList<Packet> packets) {
         String data = "";
         for (Packet packet : packets) {
@@ -22,6 +37,14 @@ public class PacketSetFactory {
         }
     }
 
+    /**
+     * For request packet sets
+     *
+     *
+     * @param line request line
+     * @param data packet data
+     * @returns a specific request packet set.
+     */
     public static RequestPacketSet createRequestPacketSet(RequestLine line, String data) {
         RequestPacketSet requestPacketSet;
         if (line.getMethod() == RequestMethod.QRY) {
@@ -41,6 +64,14 @@ public class PacketSetFactory {
         return requestPacketSet;
     }
 
+    /**
+     * For response packet sets
+     *
+     *
+     * @param line response line
+     * @param data packet data
+     * @returns a specific response packet set.
+     */
     private static PacketSet createResponsePacketSet(ResponseLine line, String data) {
         ResponsePacketSet responsePacketSet;
         if (line.getMethod() == ResponseMethod.ACK) {

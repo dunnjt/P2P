@@ -2,14 +2,8 @@ package pkg490final.network.sender;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -17,7 +11,6 @@ import javax.swing.table.DefaultTableModel;
 import pkg490final.IOFunctions;
 import pkg490final.P2PFile;
 import pkg490final.PacketUtilities;
-import pkg490final.Packets.Packet;
 import pkg490final.Packets.Request.*;
 import pkg490final.Packets.RequestLine;
 import pkg490final.Packets.Response.ResponseMethod;
@@ -156,11 +149,6 @@ public class ClientMainPanel extends javax.swing.JPanel {
             jLabel2.setText("Destination Port:");
 
             destPortTextBox.setText("4014");
-            destPortTextBox.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    destPortTextBoxActionPerformed(evt);
-                }
-            });
 
             jLabel3.setText("Directory Server IP:");
 
@@ -305,7 +293,13 @@ public class ClientMainPanel extends javax.swing.JPanel {
         QRYRequestPacketSet qryPacketSet = new QRYRequestPacketSet(query, Integer.parseInt(sourcePortTextBox.getText()), ip);
         send(qryPacketSet);
     }//GEN-LAST:event_queryButtonMouseClicked
-
+    /**
+     * upon inform and update button click, makes an INFRequestPacketSet from
+     * local files and sends it to the server. Also sets the file location for
+     * TCP connections.
+     *
+     * @param evt
+     */
     private void informButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_informButtonMouseClicked
         ArrayList<P2PFile> localFiles = IOFunctions.readLocalFiles(folderTextBox.getText());
         INFRequestPacketSet infPacketSet = new INFRequestPacketSet(localFiles, Integer.parseInt(sourcePortTextBox.getText()), ip);
@@ -314,15 +308,16 @@ public class ClientMainPanel extends javax.swing.JPanel {
         peerReceiver();
         setFileLocationTCP();
     }//GEN-LAST:event_informButtonMouseClicked
-
+    /**
+     * Upon disconnect button click, makes exit request packet set and sends it
+     * to server. Server removes files associated with this user.
+     *
+     * @param evt
+     */
     private void disconnectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disconnectButtonMouseClicked
         EXTRequestPacketSet extPacketSet = new EXTRequestPacketSet(Integer.parseInt(sourcePortTextBox.getText()), ip);
         send(extPacketSet);
     }//GEN-LAST:event_disconnectButtonMouseClicked
-
-    private void destPortTextBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_destPortTextBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_destPortTextBoxActionPerformed
 
     /**
      * send method overload for just down request packets.
@@ -383,7 +378,6 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
             responsePacketSet = (ResponsePacketSet) rcvr.getPacketSet();
             rcvr.stopListening();
-            //System.out.println("------------------------------------------RESPONSE METHOD RCVD = " + responsePacketSet.getResponseMethod());
 
         } catch (SocketException ex) {
             Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -392,6 +386,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
         clientResponse(reqLine, responsePacketSet);
     }
 
+    /**
+     * Method that takes in a response packet set and req line and makes sure
+     * the correct response was received based on the request and does an action
+     * accordingly.
+     *
+     * @param reqLine of requestpacketset sent.
+     * @param responsePacketSet received.
+     */
     private void clientResponse(RequestLine reqLine, ResponsePacketSet responsePacketSet) {
         responseLabel.setForeground(Color.green);
 
@@ -415,6 +417,10 @@ public class ClientMainPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * starts a new peer receiver upon inform and update to listen for download
+     * requests.S
+     */
     private void peerReceiver() {
         try {
             ClientReceiverDown rcvr = new ClientReceiverDown("peer2", 3014);
@@ -425,44 +431,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
     }
 
+    /**
+     * Sets file location for TCP connections
+     */
     public void setFileLocationTCP() {
         P2PClient.setFileLocation(folderTextBox.getText());
         P2PHost.setFileLocation(folderTextBox.getText());
     }
 
-//    private void peerReceiver() {
-//
-//        byte[] receive = new byte[128];
-//        try {
-//            DatagramSocket socket = new DatagramSocket(6014);
-//            while (true) {
-//                ClientReceiverDown receiver;
-//                DatagramPacket inboundPacket = new DatagramPacket(receive, receive.length);
-//                socket.receive(inboundPacket);
-//
-//                byte[] packetData = Arrays.copyOf(inboundPacket.getData(), inboundPacket.getLength());
-//                String temp = new String(packetData);
-//                System.out.println(temp);
-//                Packet reconstructedPacket = new Packet(temp);
-//
-//                RequestLine reqLine = (RequestLine) reconstructedPacket.getLine();
-//
-//                if (runningThread(reqLine.getHostName())) {
-//                    receiver = (ClientReceiverDown) threads.get(reqLine.getHostName());
-//                } else {
-//                    receiver = new ClientReceiverDown(reqLine.getHostName(), reqLine.getSourcePort());
-//                    threads.put(reqLine.getHostName(), receiver);
-//                    //threadNames.add(reqLine.getHostName());
-//                    receiver.start();
-//                }
-//                receiver.incoming(reconstructedPacket);
-//            }
-//        } catch (SocketException e) {
-//            System.out.println("CAUGHT EXCEPTION ON ClIENT LISTENER");
-//        } catch (IOException ex) {
-//            Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
     public static void main(String[] args) {
         JFrame frame = new JFrame("Peer-to-Peer File Sharing Application");
         frame.add(new ClientMainPanel(), BorderLayout.CENTER);
