@@ -55,16 +55,22 @@ public class ClientReceiverDown extends ClientReceiver {
         this.serverIP = serverIP;
         System.out.println("serverIP: " + serverIP + "\nreceiving Port: " + receivingPort + "\n sending port: " + sendingPort);
     }
-
+    
     @Override
     public void deliverData(Packet packet) {
         packetsReceived++;
         packets.add(packet);
         if (packet.isLastPacket()) {
             //System.out.println("Last packet received, stopped listening for packets.\nReconstructed Packet Data:\n\n");
-            stopListening();
             PacketSet allPackets = PacketSet.createPacketSet(packets);
             responseProcedure(allPackets);
+            packetsReceived = 0;
+            packets.clear();
+            packetSet = null;
+            currentPacket = null;
+            reqLine = null;
+            isEnded = true;
+            
         }
     }
 

@@ -19,6 +19,7 @@ public class ClientReceiver extends RDT20Receiver {
     private PacketSet packetSet;
     private int sendingPort;
     private String serverIP;
+    protected boolean isEnded = false;
 
     public ClientReceiver(String name, int receivingPort) throws SocketException {
         super(name, receivingPort);
@@ -63,6 +64,7 @@ public class ClientReceiver extends RDT20Receiver {
         try {
             receivingSocket = new DatagramSocket(receivingPort);
             while (true) {
+
                 receiverPrint("Receiver waiting for packet");
                 byte[] buf = new byte[128];
                 // receive request
@@ -79,6 +81,10 @@ public class ClientReceiver extends RDT20Receiver {
                 currentPacket = reconstructedPacket;
 
                 state.action(this);
+                if(isEnded){
+                    state = new ReceiverState0();
+                    isEnded = false;
+                }
             }
         } catch (Exception e) {
             stopListening();
