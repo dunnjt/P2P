@@ -279,8 +279,23 @@ public class ClientMainPanel extends javax.swing.JPanel {
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, 7014, ip);
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
             //this may need to go below after the OK is received from the other peer
+            
             P2PClient tcpClient = new P2PClient("peer1", 7014, p2pFiles.get(i).getName());
             tcpClient.start();
+            boolean b = true;
+            while(b) { 
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (tcpClient.isFinished()) {
+                    tcpClient.interrupt();
+                    tcpClient = null;
+                    System.gc();
+                    b = false;
+                }
+            }
         }
 
         

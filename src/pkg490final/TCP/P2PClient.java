@@ -28,6 +28,7 @@ public class P2PClient extends Thread {
     private ArrayList<P2PFile> fileNames;
     private String fileName;
     private static String location;
+    private static boolean isDownloaded;
 
     /**
      * For multiple file download -- not currently used
@@ -55,6 +56,7 @@ public class P2PClient extends Thread {
 
         this.serverPort = serverPort;
         this.fileName = fileName;
+        isDownloaded = false;
     }
 
     /**
@@ -97,6 +99,7 @@ public class P2PClient extends Thread {
 
                 //for testing
                 System.out.println("Download " + fileName + " successfully");
+                setFinished(true);
             }
 
         } catch (Exception e) {
@@ -113,6 +116,14 @@ public class P2PClient extends Thread {
 
     public static void setFileLocation(String fileLocation) {
         location = fileLocation;
+    }
+    
+    public static void setFinished(boolean downloaded) {
+        isDownloaded = downloaded;
+    }
+    
+    public boolean isFinished() {
+        return isDownloaded;
     }
 
     public static void main (String[] args) {
