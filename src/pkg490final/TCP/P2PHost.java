@@ -55,6 +55,8 @@ public class P2PHost extends Thread {
         try {
             socket = new Socket("192.168.1.2", port);
         } catch (Exception e) {
+            Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, e);
+
             System.out.println("Error");
         }
     }

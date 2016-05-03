@@ -8,7 +8,10 @@ package pkg490final.TCP;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pkg490final.P2PFile;
+import pkg490final.network.sender.ClientMainPanel;
 
 /**
  * P2PClient is the Peer on P2P network that is receiving the file. After UDP
@@ -52,11 +55,20 @@ public class P2PClient extends Thread {
      */
     public P2PClient(String name, int serverPort, String fileName) {
         super(name);
-        System.out.println("TCP: serverPort: " + serverPort + " fileName:  " + fileName);
-
         this.serverPort = serverPort;
-        this.fileName = fileName;
+        this.fileName = fileName.replace("|", " ");
         isDownloaded = false;
+        System.out.println("TCP: serverPort: " + serverPort + " fileName:  " + this.fileName);
+
+    }
+
+    public void startListening() {
+        try {
+            socket = new ServerSocket(serverPort);
+            System.out.println("Starting TCP socket: " + serverPort);
+        } catch (Exception e) {
+            System.out.println("EXCEPTION OCCURED IN OPENING TCP RECEIVE SERVER SOCKET");
+        }
     }
 
     /**
@@ -64,12 +76,6 @@ public class P2PClient extends Thread {
      */
     @Override
     public void run() {
-        try {
-            socket = new ServerSocket(serverPort);
-            System.out.println("Starting TCP socket: " + serverPort);
-        } catch (Exception e) {
-            System.out.println("EXCEPTION OCCURED IN OPENING TCP RECEIVE SERVER SOCKET");
-        }
 
         try {
             while (true) {
@@ -92,6 +98,8 @@ public class P2PClient extends Thread {
                 try {
                     fos.write(message);
                 } catch (IOException e) {
+                    System.out.println("Error Writing the message to a file");
+                    Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, e);
 
                 } finally {
                     fos.close();
@@ -102,14 +110,17 @@ public class P2PClient extends Thread {
                 setFinished(true);
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
+            System.out.println("Likely File or Path naming error");
+            Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, e);
 
-        }
-        finally {
+        } finally {
             try {
                 socket.close();
-            } catch (IOException se) {
-                
+            } catch (IOException e) {
+                System.out.println("Error closing Socket");
+                Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, e);
+
             }
         }
     }
@@ -117,18 +128,22 @@ public class P2PClient extends Thread {
     public static void setFileLocation(String fileLocation) {
         location = fileLocation;
     }
-    
+
     public static void setFinished(boolean downloaded) {
         isDownloaded = downloaded;
     }
-    
+
     public boolean isFinished() {
         return isDownloaded;
     }
 
-    public static void main (String[] args) {
+    public void setFileName(String fileName) {
+        this.fileName = fileName.replace("|", " ");
+    }
+
+    public static void main(String[] args) {
         P2PClient client = new P2PClient("test", 7014, "test1.txt");
         client.setFileLocation("/Users/johndunn/Desktop/TCPTest/");
         client.run();
-        }
+    }
 }

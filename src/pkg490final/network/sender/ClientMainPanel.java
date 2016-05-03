@@ -38,6 +38,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
     int ackPort;
     private static Map<String, Thread> threads = null;
     private int threadCounter = 0;
+    P2PClient tcpClient = null;
 
     /**
      * Creates new form ClientMainPanel
@@ -271,7 +272,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-
+    /**
+     * When the download button is clicked and file is highlighted: file is sent
+     * as a request to the receiver holding the file(ip found from P2P file
+     * info. A new TcP client is spawned in order to listen for a tcp connection
+     * on port 7014.
+     *
+     * @param evt
+     */
     private void downloadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_downloadButtonMouseClicked
         if (fileTable.getSelectedRowCount() == 1) {
             int i = fileTable.getSelectedRow();
@@ -280,36 +288,24 @@ public class ClientMainPanel extends javax.swing.JPanel {
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, 7014, ip);
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
             //this may need to go below after the OK is received from the other peer
-            
-            P2PClient tcpClient = new P2PClient(Integer.toString(threadCounter++), 7014, p2pFiles.get(i).getName());
-            tcpClient.start();
-            boolean b = true;
-            while(b) { 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ClientMainPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if (tcpClient.isFinished()) {
-                    tcpClient.interrupt();
-                    tcpClient = null;
-                    System.gc();
-                    b = false;
-                }
+            if (tcpClient == null) {
+                tcpClient = new P2PClient(Integer.toString(threadCounter++), 7014, p2pFiles.get(i).getName());
+                tcpClient.setFileName(p2pFiles.get(i).getName());
+                tcpClient.startListening();
+                tcpClient.start();
+
+            } else {
+                tcpClient.setFileName(p2pFiles.get(i).getName());
             }
         }
-
-        
-//        
-//        ArrayList<P2PFile> files = new ArrayList<>();
-//            P2PFile test = new P2PFile("test1.txt", 1234, "test", "test");
-//            files.add(test);
-//        setFileLocationTCP();
-//        P2PClient tcpClient = new P2PClient("peer1", 7016, test.getName());
-//        tcpClient.start();
-
     }//GEN-LAST:event_downloadButtonMouseClicked
-
+    /**
+     * When the query button is pressed a query is sent to the server to ask
+     * which file matches the query. a blank query returns all the files on the
+     * server.
+     *
+     * @param evt
+     */
     private void queryButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_queryButtonMouseClicked
         String query = queryTextBox.getText();
         QRYRequestPacketSet qryPacketSet = new QRYRequestPacketSet(query, Integer.parseInt(sourcePortTextBox.getText()), ip);
@@ -376,7 +372,8 @@ public class ClientMainPanel extends javax.swing.JPanel {
 
     /**
      * takes in a request packet set with a destination port and destination ip
-     * This method listens for a response packet and passes it onto the client response in order to 
+     * This method listens for a response packet and passes it onto the client
+     * response in order to
      *
      * @param ReqPacketSet
      * @param destPort
@@ -425,7 +422,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
     }
 
     private void peerReceiver() {
-        try {          
+        try {
             ClientReceiverDown rcvr = new ClientReceiverDown("peer2", 3014);
             rcvr.start();
         } catch (SocketException se) {
@@ -433,7 +430,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
         }
 
     }
-    
+
     public void setFileLocationTCP() {
         P2PClient.setFileLocation(folderTextBox.getText());
         P2PHost.setFileLocation(folderTextBox.getText());
