@@ -288,14 +288,14 @@ public class ClientMainPanel extends javax.swing.JPanel {
             DOWNRequestPacketSet downPacketSet = new DOWNRequestPacketSet(files, 7014, ip);
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
             //this may need to go below after the OK is received from the other peer
-            if (tcpClient == null) {
+            if (tcpClient != null) {
+                tcpClient.setFileName(p2pFiles.get(i).getName());
+
+            } else {
                 tcpClient = new P2PClient(Integer.toString(threadCounter++), 7014, p2pFiles.get(i).getName());
                 tcpClient.setFileName(p2pFiles.get(i).getName());
                 tcpClient.startListening();
                 tcpClient.start();
-
-            } else {
-                tcpClient.setFileName(p2pFiles.get(i).getName());
             }
         }
     }//GEN-LAST:event_downloadButtonMouseClicked
