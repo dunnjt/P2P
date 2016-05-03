@@ -37,6 +37,7 @@ public class RDT30Sender {
     private long sampleRTT = 1500; // time it takes to send a packet and receive ACK.
     private long estimatedRTT = 1500; //estimated time to receive ACK after sending packet. 3000 ms initial value according to rfc1122
     private double devRTT = 0; //deviation of RTT. start at 50 for buffer to give a little extra time to receive packet.
+    private long lastTimeout = 1500;
 
     public RDT30Sender() {
 
@@ -112,7 +113,8 @@ public class RDT30Sender {
 
         byte[] packetData = getCurrentPacket().toBytes();
 
-        senderPrint("Sender sending packet(" + (packetsSent + 1) + "): '\n" + getCurrentPacket().toString() + "\n'");
+        senderPrint("Sending Packet " + (packetsSent + 1) + " of " + currentPackets.size() + " with seq number " + getCurrentPacket().getSeqNumber() + " being sent, current time out: " + lastTimeout);
+        System.out.println("Packet Being Sent: \n" + getCurrentPacket().toString() + "\n");
         String s = new String(packetData);
 
         DatagramPacket packet = new DatagramPacket(packetData, packetData.length, internetAddress, destinationPort);
@@ -122,8 +124,8 @@ public class RDT30Sender {
 
         setTimer();
 
-//         Minor pause for easier visualization only
-//        Thread.sleep(1200);
+//        Minor pause for easier visualization only
+        Thread.sleep(4000);
     }
 
     /**
@@ -175,10 +177,10 @@ public class RDT30Sender {
 
         System.out.println("New Est RTT: " + estimatedRTT);
         System.out.println("devRTT: " + devRTT);
-        long timeOutInterval = (long) (estimatedRTT + 4 * devRTT);
-        System.out.println("TimeoutInverval: " + timeOutInterval);
+        lastTimeout = (long) (estimatedRTT + 4 * devRTT);
+        System.out.println("TimeoutInverval: " + lastTimeout);
 
-        timeOutTimer.schedule(new TimeOut(), timeOutInterval);
+        timeOutTimer.schedule(new TimeOut(), lastTimeout);
     }
 
     public void incrementPacketsSent() {

@@ -67,6 +67,7 @@ public class P2PClient extends Thread {
             socket = new ServerSocket(serverPort);
             System.out.println("Starting TCP socket: " + serverPort);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("EXCEPTION OCCURED IN OPENING TCP RECEIVE SERVER SOCKET");
         }
     }

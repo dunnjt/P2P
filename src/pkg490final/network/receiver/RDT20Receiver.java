@@ -136,13 +136,19 @@ public class RDT20Receiver extends Thread {
      */
     public void sendACK(int seqNumber) throws UnknownHostException, IOException {
 
-        receiverPrint("sending ACK: " + seqNumber);
         Packet ack = new Packet(new ResponseLine(ResponseMethod.ACK), " ", true);
         ack.setSeqNumber(seqNumber);
 
         //sends ACK back to ip and port specified in request line.
         DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), reqLine.getIp(), reqLine.getSourcePort());
 
+        //slow mode
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        receiverPrint("sending ACK: " + seqNumber);
         sendingSocket.send(ackPacket);
     }
 
