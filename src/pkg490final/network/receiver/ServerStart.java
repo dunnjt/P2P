@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
- *
+ * ServerStart is a main that starts the Directory Server in the P2P application. It does so by getting the Directory server instance and calling run().
  * @author johndunn
  */
 public class ServerStart {

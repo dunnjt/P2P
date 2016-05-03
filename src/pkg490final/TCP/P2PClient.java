@@ -15,7 +15,7 @@ import pkg490final.network.sender.ClientMainPanel;
 
 /**
  * P2PClient is the Peer on P2P network that is receiving the file. After UDP
- * communication with P2PHst, P2PClient accepts socket connection from host, and
+ * communication with P2PHost, P2PClient accepts socket connection from host, and
  * receives message as a byte array. Byte array is written to File Output
  * Stream.
  *
@@ -47,11 +47,11 @@ public class P2PClient extends Thread {
     }
 
     /**
-     * Current constructor being used
+     * Current constructor being used P2PClient. This object is created when a peer chooses to download a file.
      *
-     * @param name
-     * @param serverPort
-     * @param fileName
+     * @param name is the name of thread.
+     * @param serverPort is the TCP port, designated as 7014 for the purpose of this project.
+     * @param fileName the name of the file that the client will write to the output stream.
      */
     public P2PClient(String name, int serverPort, String fileName) {
         super(name);
@@ -62,6 +62,9 @@ public class P2PClient extends Thread {
 
     }
 
+    /**
+     * startListening() responsible for create a new socket object and catching exception if bind error.
+     */
     public void startListening() {
         try {
             socket = new ServerSocket(serverPort);
@@ -73,7 +76,8 @@ public class P2PClient extends Thread {
     }
 
     /**
-     * Start the thread to connect and begin sending
+     * run() it the main receiving method in the thread. It accepts socket connection from host sending file and reads byte array message from host.
+     * File is written in output stream as byte array. Exceptions are caught, and finally socket is closed in try, catch, finally clause.
      */
     @Override
     public void run() {
@@ -126,18 +130,34 @@ public class P2PClient extends Thread {
         }
     }
 
+    /**
+     * setFileLocation determines to where the downloads will be written.
+     * @param fileLocation path of file location as String.
+     */
     public static void setFileLocation(String fileLocation) {
         location = fileLocation;
     }
 
+    /**
+     * setFinished boolean is used in combination with isFinished() to assist in starting and stopping threads after download.
+     * @param downloaded 
+     */
     public static void setFinished(boolean downloaded) {
         isDownloaded = downloaded;
     }
 
+    /**
+     * isFinished() is called from ClientMainPanel to determine if the thread has executed fully, by determining if the file has been downloaded fully.
+     * @return 
+     */
     public boolean isFinished() {
         return isDownloaded;
     }
 
+    /**
+     * setFileName is a method for file name visualization purposes.
+     * @param fileName 
+     */
     public void setFileName(String fileName) {
         this.fileName = fileName.replace("|", " ");
     }

@@ -22,8 +22,6 @@ import pkg490final.network.sender.ClientMainPanel;
  * communication from P2P client, P2PHost establishes TCP socket connection, for
  * which P2PClient will accept. Host transfers file data as byte array.
  *
- *
- *
  * @author johndunn
  */
 public class P2PHost extends Thread {
@@ -33,6 +31,14 @@ public class P2PHost extends Thread {
     private String fileName;
     private static String location;
 
+    /**
+     * P2PHost constructor converts string IP address pulled from UDP packet requesting the file, 
+     * and converts to Inet Address to create socket connection to that peer.
+     * @param name name of thread
+     * @param port TCP port, 7014 used for the purposes of this project
+     * @param localAddr String of P2PClient
+     * @param fileName name of file that CLient is requesting.
+     */
     public P2PHost(String name, int port, String localAddr, String fileName) {
         super(name);
         this.fileName = fileName;
@@ -49,6 +55,12 @@ public class P2PHost extends Thread {
         }
     }
 
+    /**
+     * Not using this constructor at the moment.
+     * @param name
+     * @param port
+     * @param fileName 
+     */
     public P2PHost(String name, int port, String fileName) {
         super(name);
         this.fileName = fileName;
@@ -62,7 +74,8 @@ public class P2PHost extends Thread {
     }
 
     /**
-     * Start the thread to begin listening
+     * run() it the main sending method in the thread. It writes byte array of specified file path to the output stream.
+     * Exceptions are caught, and finally, socket is closed in try, catch, finally clause.
      */
     public void run() {
 
@@ -92,6 +105,10 @@ public class P2PHost extends Thread {
         }
     }
 
+    /**
+     * setFileLocation determines to where the downloads will be written.
+     * @param fileLocation path of file location as String.
+     */
     public static void setFileLocation(String fileLocation) {
         location = fileLocation;
     }

@@ -1,26 +1,18 @@
 package pkg490final.network.receiver;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pkg490final.P2PFile;
 import pkg490final.Packets.Packet;
 import pkg490final.Packets.RequestLine;
-import pkg490final.Song;
 
 /**
  * Singleton Directory Server. Once server is started single instance of class
@@ -33,7 +25,6 @@ import pkg490final.Song;
  */
 public class DirectoryServer {
 
-    private static ArrayList<Song> masterSongList = null;
     private static ArrayList<P2PFile> masterP2PList = null;
     private static DirectoryServer instance = null;
     private DatagramSocket serverSocket = null;
@@ -51,7 +42,6 @@ public class DirectoryServer {
         try {
             System.out.println("ON PORT: " + port);
             serverSocket = new DatagramSocket(port);
-            masterSongList = new ArrayList<>();
             threads = new HashMap<>();
             masterP2PList = new ArrayList<>();
             threadNames = new ArrayList<>();
@@ -167,7 +157,7 @@ public class DirectoryServer {
     }
 
     /**
-     * findPeer() searches through masterP2PList for peer holding specified
+     * findPeer() not currently used. searches through masterP2PList for peer holding specified
      * filename.
      *
      * @param fileName the filename one peer is requesting from another
@@ -183,10 +173,21 @@ public class DirectoryServer {
         return null;
     }
 
+    /**
+     * getMasterList() returns masterP2PList.
+     * @return 
+     */
     public synchronized ArrayList<P2PFile> getMasterList() {
         return masterP2PList;
     }
 
+    /**
+     * qryMasterList returns list of P2Pfiles requested. if statement returns a black query text box, returning all files,
+     * else return the specified file.
+     * @param qry the name of file requested.
+     * @param ip ip of user hosting that file.
+     * @return 
+     */
     public synchronized ArrayList<P2PFile> qryMasterList(String qry, String ip) {
         ArrayList<P2PFile> returnList = new ArrayList<>();
 
@@ -207,12 +208,22 @@ public class DirectoryServer {
 
     }
 
+    /**
+     * killThread used to manage running threads.
+     * @param thread 
+     */
     public synchronized void killThread(String thread) {
         threads.get(thread).interrupt();
         threadNames.remove(thread);
         threads.remove(thread);
     }
 
+    /**
+     * restarReceiver adds an RDT receiver back to the thread HashMap.
+     * @param thread
+     * @param receivingPort
+     * @throws SocketException 
+     */
     public synchronized void restartReceiver(String thread, int receivingPort) throws SocketException {
         threads.put(thread, new RDT20Receiver(thread, receivingPort));
     }

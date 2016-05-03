@@ -22,7 +22,8 @@ import pkg490final.Packets.Response.ResponseMethod;
 import pkg490final.TCP.P2PHost;
 
 /**
- *
+ * ClientReceiverDown extends ClientReceiver used solely for TCP. 
+ * Overrides deliverData method to handle the response procedure for TCP file transfer specifically.
  * @author johndunn
  */
 public class ClientReceiverDown extends ClientReceiver {
@@ -74,6 +75,10 @@ public class ClientReceiverDown extends ClientReceiver {
         }
     }
 
+    /**
+     * responseProcedure starts P2PHost thread for TCP file transfer.
+     * @param packets 
+     */
     public void responseProcedure(PacketSet packets) {
         RequestPacketSet rps = (RequestPacketSet) packets;
         ArrayList<P2PFile> files = packets.convertToP2PFiles();
