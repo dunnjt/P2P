@@ -34,10 +34,11 @@ public class RDT30Sender {
     private ArrayList<Packet> currentPackets; //current list of packets to be sent to server.
     private Timer timeOutTimer; //timer to handle timeouts when an ACK isn't received.
     private long startTime; // time when packet is initially sent, used to calculate sample RTT.
-    private long sampleRTT = 1500; // time it takes to send a packet and receive ACK.
-    private long estimatedRTT = 1500; //estimated time to receive ACK after sending packet. 3000 ms initial value according to rfc1122
+    private long sampleRTT = 3000; // time it takes to send a packet and receive ACK.
+    private long estimatedRTT = 3000; //estimated time to receive ACK after sending packet. 3000 ms initial value according to rfc1122
     private double devRTT = 0; //deviation of RTT. start at 50 for buffer to give a little extra time to receive packet.
-    private long lastTimeout = 1500;
+    private long lastTimeout = 3000;
+    private boolean[] packetSentOnce; // to control timer to see if the packet was sent once already or not
 
     public RDT30Sender() {
 
@@ -71,7 +72,8 @@ public class RDT30Sender {
         }
         if (receivingSocket != null) {
             receivingSocket.close();
-        }    }
+        }
+    }
 
     /**
      * Initialize a sending sequence in order to send a list of packets. Set
@@ -88,6 +90,7 @@ public class RDT30Sender {
         state = new SenderSendState0();
         packetsSent = 0;
         currentPackets = packets;
+        packetSentOnce = new boolean[currentPackets.size()];
 
         while (packetsSent < packets.size()) {
             senderPrint("\n\nPACKET:" + (packetsSent + 1) + "-------------------------------------------------------\n\n");
@@ -96,7 +99,6 @@ public class RDT30Sender {
         }
         senderPrint("All packets sent and received.");
         stopSender();
-        
 
     }
 
@@ -115,17 +117,19 @@ public class RDT30Sender {
 
         senderPrint("Sending Packet " + (packetsSent + 1) + " of " + currentPackets.size() + " with seq number " + getCurrentPacket().getSeqNumber() + " being sent, current time out: " + lastTimeout);
         System.out.println("Packet Being Sent: \n" + getCurrentPacket().toString() + "\n");
-        String s = new String(packetData);
 
         DatagramPacket packet = new DatagramPacket(packetData, packetData.length, internetAddress, destinationPort);
+//        Thread.sleep(4000);
+
         sendingSocket.send(packet);
 
-        startTime = System.currentTimeMillis(); //used for sample RTT
-
+        if (!packetSentOnce[packetsSent]) {
+            startTime = System.currentTimeMillis(); //used for sample RTT
+            packetSentOnce[packetsSent] = true;
+        }
         setTimer();
 
 //        Minor pause for easier visualization only
-        Thread.sleep(4000);
     }
 
     /**
@@ -145,7 +149,7 @@ public class RDT30Sender {
 
         //records sample RTT when ACK is received.
         //I needed to add this 50 ms because i was getting a timer already cancelled error if i didn't...will investigate why in the future.
-        sampleRTT = System.currentTimeMillis() - startTime + 50;
+        sampleRTT = System.currentTimeMillis() - startTime + 50 ;
 
         byte[] packetData = Arrays.copyOf(packet.getData(), packet.getLength());
         //reconstructs packet from DatagramPacket received.
@@ -158,7 +162,6 @@ public class RDT30Sender {
             return -1;
         }
     }
-
 
     /**
      * This class starts a timer based on Estimated and sample RTT and the
@@ -189,7 +192,7 @@ public class RDT30Sender {
 
     public int getPacketsSent() {
         return packetsSent;
-    }    
+    }
 
     public Packet getCurrentPacket() {
         return currentPackets.get(packetsSent);
