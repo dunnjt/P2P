@@ -37,6 +37,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
     String ip;
     int ackPort;
     private static Map<String, Thread> threads = null;
+    private int threadCounter = 0;
 
     /**
      * Creates new form ClientMainPanel
@@ -280,7 +281,7 @@ public class ClientMainPanel extends javax.swing.JPanel {
             send(downPacketSet, 3014, p2pFiles.get(i).getIp());
             //this may need to go below after the OK is received from the other peer
             
-            P2PClient tcpClient = new P2PClient("peer1", 7014, p2pFiles.get(i).getName());
+            P2PClient tcpClient = new P2PClient(Integer.toString(threadCounter++), 7014, p2pFiles.get(i).getName());
             tcpClient.start();
             boolean b = true;
             while(b) { 
