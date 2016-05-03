@@ -143,11 +143,11 @@ public class RDT20Receiver extends Thread {
         DatagramPacket ackPacket = new DatagramPacket(ack.toString().getBytes(), ack.toString().length(), reqLine.getIp(), reqLine.getSourcePort());
 
         //slow mode
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            Thread.sleep(4000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(RDT20Receiver.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         receiverPrint("sending ACK: " + seqNumber);
         sendingSocket.send(ackPacket);
     }
